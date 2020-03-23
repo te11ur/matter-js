@@ -1,25 +1,19 @@
+import {Common} from "./Common";
+import {Plugin} from "./Plugin";
+
 /**
 * The `Matter` module is the top level namespace. It also includes a function for installing plugins on top of the library.
 *
 * @class Matter
 */
-
-var Matter = {};
-
-module.exports = Matter;
-
-var Plugin = require('./Plugin');
-var Common = require('./Common');
-
-(function() {
-
+export class Matter {
     /**
      * The library name.
      * @property name
      * @readOnly
      * @type {String}
      */
-    Matter.name = 'matter-js';
+    static _name = 'matter-js';
 
     /**
      * The library version.
@@ -27,7 +21,7 @@ var Common = require('./Common');
      * @readOnly
      * @type {String}
      */
-    Matter.version = typeof __MATTER_VERSION__ !== 'undefined' ? __MATTER_VERSION__ : '*';
+    static version = typeof __MATTER_VERSION__ !== 'undefined' ? __MATTER_VERSION__ : '*';
 
     /**
      * A list of plugin dependencies to be installed. These are normally set and installed through `Matter.use`.
@@ -35,7 +29,7 @@ var Common = require('./Common');
      * @property uses
      * @type {Array}
      */
-    Matter.uses = [];
+    static uses = [];
 
     /**
      * The plugins that have been installed through `Matter.Plugin.install`. Read only.
@@ -43,7 +37,7 @@ var Common = require('./Common');
      * @readOnly
      * @type {Array}
      */
-    Matter.used = [];
+    static used = [];
 
     /**
      * Installs the given plugins on the `Matter` namespace.
@@ -53,7 +47,7 @@ var Common = require('./Common');
      * @method use
      * @param ...plugin {Function} The plugin(s) to install on `base` (multi-argument).
      */
-    Matter.use = function() {
+    static use = function() {
         Plugin.use(Matter, Array.prototype.slice.call(arguments));
     };
 
@@ -65,7 +59,7 @@ var Common = require('./Common');
      * @param {function} func The function to chain before the original
      * @return {function} The chained function that replaced the original
      */
-    Matter.before = function(path, func) {
+    static before = function(path, func) {
         path = path.replace(/^Matter./, '');
         return Common.chainPathBefore(Matter, path, func);
     };
@@ -78,9 +72,8 @@ var Common = require('./Common');
      * @param {function} func The function to chain after the original
      * @return {function} The chained function that replaced the original
      */
-    Matter.after = function(path, func) {
+    static after = function(path, func) {
         path = path.replace(/^Matter./, '');
         return Common.chainPathAfter(Matter, path, func);
     };
-
-})();
+}

@@ -1,3 +1,9 @@
+import {SAT} from "./SAT";
+import {Bodies} from "../factory/Bodies";
+import {Bounds} from "../geometry/Bounds";
+import {Vector} from "../geometry/Vector";
+import {Vertices} from "../geometry/Vertices";
+
 /**
 * The `Matter.Query` module contains methods for performing collision queries.
 *
@@ -5,19 +11,7 @@
 *
 * @class Query
 */
-
-var Query = {};
-
-module.exports = Query;
-
-var Vector = require('../geometry/Vector');
-var SAT = require('./SAT');
-var Bounds = require('../geometry/Bounds');
-var Bodies = require('../factory/Bodies');
-var Vertices = require('../geometry/Vertices');
-
-(function() {
-
+export class Query {
     /**
      * Returns a list of collisions between `body` and `bodies`.
      * @method collides
@@ -25,12 +19,12 @@ var Vertices = require('../geometry/Vertices');
      * @param {body[]} bodies
      * @return {object[]} Collisions
      */
-    Query.collides = function(body, bodies) {
+    static collides(body, bodies) {
         var collisions = [];
 
         for (var i = 0; i < bodies.length; i++) {
             var bodyA = bodies[i];
-            
+
             if (Bounds.overlaps(bodyA.bounds, body.bounds)) {
                 for (var j = bodyA.parts.length === 1 ? 0 : 1; j < bodyA.parts.length; j++) {
                     var part = bodyA.parts[j];
@@ -48,7 +42,7 @@ var Vertices = require('../geometry/Vertices');
         }
 
         return collisions;
-    };
+    }
 
     /**
      * Casts a ray segment against a set of bodies and returns all collisions, ray width is optional. Intersection points are not provided.
@@ -59,7 +53,7 @@ var Vertices = require('../geometry/Vertices');
      * @param {number} [rayWidth]
      * @return {object[]} Collisions
      */
-    Query.ray = function(bodies, startPoint, endPoint, rayWidth) {
+    static ray(bodies, startPoint, endPoint, rayWidth) {
         rayWidth = rayWidth || 1e-100;
 
         var rayAngle = Vector.angle(startPoint, endPoint),
@@ -71,11 +65,11 @@ var Vertices = require('../geometry/Vertices');
 
         for (var i = 0; i < collisions.length; i += 1) {
             var collision = collisions[i];
-            collision.body = collision.bodyB = collision.bodyA;            
+            collision.body = collision.bodyB = collision.bodyA;
         }
 
         return collisions;
-    };
+    }
 
     /**
      * Returns all bodies whose bounds are inside (or outside if set) the given set of bounds, from the given set of bodies.
@@ -85,7 +79,7 @@ var Vertices = require('../geometry/Vertices');
      * @param {bool} [outside=false]
      * @return {body[]} The bodies matching the query
      */
-    Query.region = function(bodies, bounds, outside) {
+    static region(bodies, bounds, outside) {
         var result = [];
 
         for (var i = 0; i < bodies.length; i++) {
@@ -96,7 +90,7 @@ var Vertices = require('../geometry/Vertices');
         }
 
         return result;
-    };
+    }
 
     /**
      * Returns all bodies whose vertices contain the given point, from the given set of bodies.
@@ -105,12 +99,12 @@ var Vertices = require('../geometry/Vertices');
      * @param {vector} point
      * @return {body[]} The bodies matching the query
      */
-    Query.point = function(bodies, point) {
+    static point(bodies, point) {
         var result = [];
 
         for (var i = 0; i < bodies.length; i++) {
             var body = bodies[i];
-            
+
             if (Bounds.contains(body.bounds, point)) {
                 for (var j = body.parts.length === 1 ? 0 : 1; j < body.parts.length; j++) {
                     var part = body.parts[j];
@@ -123,8 +117,6 @@ var Vertices = require('../geometry/Vertices');
                 }
             }
         }
-
         return result;
-    };
-
-})();
+    }
+}

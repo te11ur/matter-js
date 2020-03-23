@@ -1,19 +1,13 @@
+import {Pair} from "./Pair";
+import {Common} from "../core/Common";
+
 /**
 * The `Matter.Pairs` module contains methods for creating and manipulating collision pair sets.
 *
 * @class Pairs
 */
-
-var Pairs = {};
-
-module.exports = Pairs;
-
-var Pair = require('./Pair');
-var Common = require('../core/Common');
-
-(function() {
-    
-    Pairs._pairMaxIdleLife = 1000;
+export class Pairs {
+    static _pairMaxIdleLife = 1000;
 
     /**
      * Creates a new pairs structure.
@@ -21,8 +15,8 @@ var Common = require('../core/Common');
      * @param {object} options
      * @return {pairs} A new pairs structure
      */
-    Pairs.create = function(options) {
-        return Common.extend({ 
+    static create(options) {
+        return Common.extend({
             table: {},
             list: [],
             collisionStart: [],
@@ -38,7 +32,7 @@ var Common = require('../core/Common');
      * @param {collision[]} collisions
      * @param {number} timestamp
      */
-    Pairs.update = function(pairs, collisions, timestamp) {
+    static update(pairs, collisions, timestamp) {
         var pairsList = pairs.list,
             pairsTable = pairs.table,
             collisionStart = pairs.collisionStart,
@@ -65,7 +59,7 @@ var Common = require('../core/Common');
                 pairId = Pair.id(collision.bodyA, collision.bodyB);
 
                 pair = pairsTable[pairId];
-                
+
                 if (pair) {
                     // pair already exists (but may or may not be active)
                     if (pair.isActive) {
@@ -100,14 +94,14 @@ var Common = require('../core/Common');
             }
         }
     };
-    
+
     /**
      * Finds and removes pairs that have been inactive for a set amount of time.
      * @method removeOld
      * @param {object} pairs
      * @param {number} timestamp
      */
-    Pairs.removeOld = function(pairs, timestamp) {
+    static removeOld(pairs, timestamp) {
         var pairsList = pairs.list,
             pairsTable = pairs.table,
             indexesToRemove = [],
@@ -119,7 +113,7 @@ var Common = require('../core/Common');
         for (i = 0; i < pairsList.length; i++) {
             pair = pairsList[i];
             collision = pair.collision;
-            
+
             // never remove sleeping pairs
             if (collision.bodyA.isSleeping || collision.bodyB.isSleeping) {
                 pair.timeUpdated = timestamp;
@@ -147,7 +141,7 @@ var Common = require('../core/Common');
      * @param {pairs} pairs
      * @return {pairs} pairs
      */
-    Pairs.clear = function(pairs) {
+    static clear(pairs) {
         pairs.table = {};
         pairs.list.length = 0;
         pairs.collisionStart.length = 0;
@@ -155,5 +149,4 @@ var Common = require('../core/Common');
         pairs.collisionEnd.length = 0;
         return pairs;
     };
-
-})();
+}

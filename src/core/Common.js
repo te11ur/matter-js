@@ -3,16 +3,10 @@
 *
 * @class Common
 */
-
-var Common = {};
-
-module.exports = Common;
-
-(function() {
-
-    Common._nextId = 0;
-    Common._seed = 0;
-    Common._nowStartTime = +(new Date());
+export class Common {
+    static _nextId = 0;
+    static _seed = 0;
+    static _nowStartTime = +(new Date());
 
     /**
      * Extends the object in the first argument using the object in the second argument.
@@ -21,7 +15,7 @@ module.exports = Common;
      * @param {boolean} deep
      * @return {} obj extended
      */
-    Common.extend = function(obj, deep) {
+    static extend(obj, deep) {
         var argsStart,
             args,
             deepClone;
@@ -52,7 +46,7 @@ module.exports = Common;
                 }
             }
         }
-        
+
         return obj;
     };
 
@@ -63,7 +57,7 @@ module.exports = Common;
      * @param {bool} deep
      * @return {} obj cloned
      */
-    Common.clone = function(obj, deep) {
+    static clone(obj, deep) {
         return Common.extend({}, deep, obj);
     };
 
@@ -73,7 +67,7 @@ module.exports = Common;
      * @param {} obj
      * @return {string[]} keys
      */
-    Common.keys = function(obj) {
+    static keys(obj) {
         if (Object.keys)
             return Object.keys(obj);
 
@@ -90,9 +84,9 @@ module.exports = Common;
      * @param {} obj
      * @return {array} Array of the objects property values
      */
-    Common.values = function(obj) {
+    static values(obj) {
         var values = [];
-        
+
         if (Object.keys) {
             var keys = Object.keys(obj);
             for (var i = 0; i < keys.length; i++) {
@@ -100,7 +94,7 @@ module.exports = Common;
             }
             return values;
         }
-        
+
         // avoid hasOwnProperty for performance
         for (var key in obj)
             values.push(obj[key]);
@@ -116,7 +110,7 @@ module.exports = Common;
      * @param {number} [end] Path slice end
      * @return {} The object at the given path
      */
-    Common.get = function(obj, path, begin, end) {
+    static get(obj, path, begin, end) {
         path = path.split('.').slice(begin, end);
 
         for (var i = 0; i < path.length; i += 1) {
@@ -136,7 +130,7 @@ module.exports = Common;
      * @param {number} [end] Path slice end
      * @return {} Pass through `val` for chaining
      */
-    Common.set = function(obj, path, val, begin, end) {
+    static set(obj, path, val, begin, end) {
         var parts = path.split('.').slice(begin, end);
         Common.get(obj, path, 0, -1)[parts[parts.length - 1]] = val;
         return val;
@@ -149,7 +143,7 @@ module.exports = Common;
      * @param {array} array
      * @return {array} array shuffled randomly
      */
-    Common.shuffle = function(array) {
+    static shuffle(array) {
         for (var i = array.length - 1; i > 0; i--) {
             var j = Math.floor(Common.random() * (i + 1));
             var temp = array[i];
@@ -166,7 +160,7 @@ module.exports = Common;
      * @param {array} choices
      * @return {object} A random choice object from the array
      */
-    Common.choose = function(choices) {
+    static choose(choices) {
         return choices[Math.floor(Common.random() * choices.length)];
     };
 
@@ -176,7 +170,7 @@ module.exports = Common;
      * @param {object} obj
      * @return {boolean} True if the object is a HTMLElement, otherwise false
      */
-    Common.isElement = function(obj) {
+    static isElement(obj) {
         if (typeof HTMLElement !== 'undefined') {
             return obj instanceof HTMLElement;
         }
@@ -190,7 +184,7 @@ module.exports = Common;
      * @param {object} obj
      * @return {boolean} True if the object is an array, otherwise false
      */
-    Common.isArray = function(obj) {
+    static isArray(obj) {
         return Object.prototype.toString.call(obj) === '[object Array]';
     };
 
@@ -200,7 +194,7 @@ module.exports = Common;
      * @param {object} obj
      * @return {boolean} True if the object is a function, otherwise false
      */
-    Common.isFunction = function(obj) {
+    static isFunction (obj) {
         return typeof obj === "function";
     };
 
@@ -210,7 +204,7 @@ module.exports = Common;
      * @param {object} obj
      * @return {boolean} True if the object is a plain object, otherwise false
      */
-    Common.isPlainObject = function(obj) {
+    static isPlainObject(obj) {
         return typeof obj === 'object' && obj.constructor === Object;
     };
 
@@ -220,10 +214,10 @@ module.exports = Common;
      * @param {object} obj
      * @return {boolean} True if the object is a string, otherwise false
      */
-    Common.isString = function(obj) {
+    static isString(obj) {
         return toString.call(obj) === '[object String]';
     };
-    
+
     /**
      * Returns the given value clamped between a minimum and maximum value.
      * @method clamp
@@ -232,31 +226,31 @@ module.exports = Common;
      * @param {number} max
      * @return {number} The value clamped between min and max inclusive
      */
-    Common.clamp = function(value, min, max) {
+    static clamp(value, min, max) {
         if (value < min)
             return min;
         if (value > max)
             return max;
         return value;
     };
-    
+
     /**
      * Returns the sign of the given value.
      * @method sign
      * @param {number} value
      * @return {number} -1 if negative, +1 if 0 or positive
      */
-    Common.sign = function(value) {
+    static sign(value) {
         return value < 0 ? -1 : 1;
     };
-    
+
     /**
      * Returns the current timestamp since the time origin (e.g. from page load).
      * The result will be high-resolution including decimal places if available.
      * @method now
      * @return {number} the current timestamp
      */
-    Common.now = function() {
+    static now() {
         if (typeof window !== 'undefined' && window.performance) {
             if (window.performance.now) {
                 return window.performance.now();
@@ -267,7 +261,7 @@ module.exports = Common;
 
         return (new Date()) - Common._nowStartTime;
     };
-    
+
     /**
      * Returns a random value between a minimum and a maximum value inclusive.
      * The function uses a seeded random generator.
@@ -276,16 +270,10 @@ module.exports = Common;
      * @param {number} max
      * @return {number} A random number between min and max inclusive
      */
-    Common.random = function(min, max) {
+    static random(min, max) {
         min = (typeof min !== "undefined") ? min : 0;
         max = (typeof max !== "undefined") ? max : 1;
         return min + _seededRandom() * (max - min);
-    };
-
-    var _seededRandom = function() {
-        // https://en.wikipedia.org/wiki/Linear_congruential_generator
-        Common._seed = (Common._seed * 9301 + 49297) % 233280;
-        return Common._seed / 233280;
     };
 
     /**
@@ -294,13 +282,13 @@ module.exports = Common;
      * @param {string} colorString
      * @return {number} An integer representing the CSS hex string
      */
-    Common.colorToNumber = function(colorString) {
+    static colorToNumber(colorString) {
         colorString = colorString.replace('#','');
 
         if (colorString.length == 3) {
             colorString = colorString.charAt(0) + colorString.charAt(0)
-                        + colorString.charAt(1) + colorString.charAt(1)
-                        + colorString.charAt(2) + colorString.charAt(2);
+                + colorString.charAt(1) + colorString.charAt(1)
+                + colorString.charAt(2) + colorString.charAt(2);
         }
 
         return parseInt(colorString, 16);
@@ -308,7 +296,7 @@ module.exports = Common;
 
     /**
      * The console logging level to use, where each level includes all levels above and excludes the levels below.
-     * The default level is 'debug' which shows all console messages.  
+     * The default level is 'debug' which shows all console messages.
      *
      * Possible level values are:
      * - 0 = None
@@ -320,7 +308,7 @@ module.exports = Common;
      * @type {Number}
      * @default 1
      */
-    Common.logLevel = 1;
+    static logLevel = 1;
 
     /**
      * Shows a `console.log` message only if the current `Common.logLevel` allows it.
@@ -328,7 +316,7 @@ module.exports = Common;
      * @method log
      * @param ...objs {} The objects to log.
      */
-    Common.log = function() {
+    static log() {
         if (console && Common.logLevel > 0 && Common.logLevel <= 3) {
             console.log.apply(console, ['matter-js:'].concat(Array.prototype.slice.call(arguments)));
         }
@@ -340,7 +328,7 @@ module.exports = Common;
      * @method info
      * @param ...objs {} The objects to log.
      */
-    Common.info = function() {
+    static info() {
         if (console && Common.logLevel > 0 && Common.logLevel <= 2) {
             console.info.apply(console, ['matter-js:'].concat(Array.prototype.slice.call(arguments)));
         }
@@ -352,7 +340,7 @@ module.exports = Common;
      * @method warn
      * @param ...objs {} The objects to log.
      */
-    Common.warn = function() {
+    static warn() {
         if (console && Common.logLevel > 0 && Common.logLevel <= 3) {
             console.warn.apply(console, ['matter-js:'].concat(Array.prototype.slice.call(arguments)));
         }
@@ -363,7 +351,7 @@ module.exports = Common;
      * @method nextId
      * @return {Number} Unique sequential ID
      */
-    Common.nextId = function() {
+    static nextId() {
         return Common._nextId++;
     };
 
@@ -374,7 +362,7 @@ module.exports = Common;
      * @param {object} needle
      * @return {number} The position of needle in haystack, otherwise -1.
      */
-    Common.indexOf = function(haystack, needle) {
+    static indexOf(haystack, needle) {
         if (haystack.indexOf)
             return haystack.indexOf(needle);
 
@@ -393,7 +381,7 @@ module.exports = Common;
      * @param {function} func
      * @return {array} Values from list transformed by func.
      */
-    Common.map = function(list, func) {
+    static map(list, func) {
         if (list.map) {
             return list.map(func);
         }
@@ -414,7 +402,7 @@ module.exports = Common;
      * @param {object} graph
      * @return {array} Partially ordered set of vertices in topological order.
      */
-    Common.topologicalSort = function(graph) {
+    static topologicalSort(graph) {
         // https://github.com/mgechev/javascript-algorithms
         // Copyright (c) Minko Gechev (MIT license)
         // Modifications: tidy formatting and naming
@@ -431,7 +419,7 @@ module.exports = Common;
         return result;
     };
 
-    Common._topologicalSort = function(node, visited, temp, graph, result) {
+    static _topologicalSort(node, visited, temp, graph, result) {
         var neighbors = graph[node] || [];
         temp[node] = true;
 
@@ -465,7 +453,7 @@ module.exports = Common;
      * @param ...funcs {function} The functions to chain.
      * @return {function} A new function that calls the passed functions in order.
      */
-    Common.chain = function() {
+    static chain() {
         var funcs = [];
 
         for (var i = 0; i < arguments.length; i += 1) {
@@ -513,7 +501,7 @@ module.exports = Common;
      * @param {function} func The function to chain before the original
      * @return {function} The chained function that replaced the original
      */
-    Common.chainPathBefore = function(base, path, func) {
+    static chainPathBefore(base, path, func) {
         return Common.set(base, path, Common.chain(
             func,
             Common.get(base, path)
@@ -529,10 +517,16 @@ module.exports = Common;
      * @param {function} func The function to chain after the original
      * @return {function} The chained function that replaced the original
      */
-    Common.chainPathAfter = function(base, path, func) {
+    static chainPathAfter = function(base, path, func) {
         return Common.set(base, path, Common.chain(
             Common.get(base, path),
             func
         ));
     };
-})();
+}
+
+const _seededRandom = function() {
+    // https://en.wikipedia.org/wiki/Linear_congruential_generator
+    Common._seed = (Common._seed * 9301 + 49297) % 233280;
+    return Common._seed / 233280;
+};

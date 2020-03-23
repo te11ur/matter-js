@@ -1,3 +1,9 @@
+import {Body} from "../body/Body";
+import {Composite} from "../body/Composite";
+import {Constraint} from "../constraint/Constraint";
+import {Common} from "../core/Common";
+import {Bodies} from "./Bodies";
+
 /**
 * The `Matter.Composites` module contains factory methods for creating composite bodies
 * with commonly used configurations (such as stacks and chains).
@@ -6,19 +12,7 @@
 *
 * @class Composites
 */
-
-var Composites = {};
-
-module.exports = Composites;
-
-var Composite = require('../body/Composite');
-var Constraint = require('../constraint/Constraint');
-var Common = require('../core/Common');
-var Body = require('../body/Body');
-var Bodies = require('./Bodies');
-
-(function() {
-
+export class Composites {
     /**
      * Create a new composite containing bodies created in the callback in a grid arrangement.
      * This function uses the body's bounds to prevent overlaps.
@@ -32,7 +26,7 @@ var Bodies = require('./Bodies');
      * @param {function} callback
      * @return {composite} A new composite containing objects created in the callback
      */
-    Composites.stack = function(xx, yy, columns, rows, columnGap, rowGap, callback) {
+    static stack(xx, yy, columns, rows, columnGap, rowGap, callback) {
         var stack = Composite.create({ label: 'Stack' }),
             x = xx,
             y = yy,
@@ -41,37 +35,37 @@ var Bodies = require('./Bodies');
 
         for (var row = 0; row < rows; row++) {
             var maxHeight = 0;
-            
+
             for (var column = 0; column < columns; column++) {
                 var body = callback(x, y, column, row, lastBody, i);
-                    
+
                 if (body) {
                     var bodyHeight = body.bounds.max.y - body.bounds.min.y,
-                        bodyWidth = body.bounds.max.x - body.bounds.min.x; 
+                        bodyWidth = body.bounds.max.x - body.bounds.min.x;
 
                     if (bodyHeight > maxHeight)
                         maxHeight = bodyHeight;
-                    
+
                     Body.translate(body, { x: bodyWidth * 0.5, y: bodyHeight * 0.5 });
 
                     x = body.bounds.max.x + columnGap;
 
                     Composite.addBody(stack, body);
-                    
+
                     lastBody = body;
                     i += 1;
                 } else {
                     x += columnGap;
                 }
             }
-            
+
             y += maxHeight + rowGap;
             x = xx;
         }
 
         return stack;
     };
-    
+
     /**
      * Chains all bodies in the given composite together using constraints.
      * @method chain
@@ -83,31 +77,31 @@ var Bodies = require('./Bodies');
      * @param {object} options
      * @return {composite} A new composite containing objects chained together with constraints
      */
-    Composites.chain = function(composite, xOffsetA, yOffsetA, xOffsetB, yOffsetB, options) {
+    static chain(composite, xOffsetA, yOffsetA, xOffsetB, yOffsetB, options) {
         var bodies = composite.bodies;
-        
+
         for (var i = 1; i < bodies.length; i++) {
             var bodyA = bodies[i - 1],
                 bodyB = bodies[i],
                 bodyAHeight = bodyA.bounds.max.y - bodyA.bounds.min.y,
-                bodyAWidth = bodyA.bounds.max.x - bodyA.bounds.min.x, 
+                bodyAWidth = bodyA.bounds.max.x - bodyA.bounds.min.x,
                 bodyBHeight = bodyB.bounds.max.y - bodyB.bounds.min.y,
                 bodyBWidth = bodyB.bounds.max.x - bodyB.bounds.min.x;
-        
+
             var defaults = {
                 bodyA: bodyA,
                 pointA: { x: bodyAWidth * xOffsetA, y: bodyAHeight * yOffsetA },
                 bodyB: bodyB,
                 pointB: { x: bodyBWidth * xOffsetB, y: bodyBHeight * yOffsetB }
             };
-            
+
             var constraint = Common.extend(defaults, options);
-        
+
             Composite.addConstraint(composite, Constraint.create(constraint));
         }
 
         composite.label += ' Chain';
-        
+
         return composite;
     };
 
@@ -121,14 +115,14 @@ var Bodies = require('./Bodies');
      * @param {object} options
      * @return {composite} The composite containing objects meshed together with constraints
      */
-    Composites.mesh = function(composite, columns, rows, crossBrace, options) {
+    static mesh(composite, columns, rows, crossBrace, options) {
         var bodies = composite.bodies,
             row,
             col,
             bodyA,
             bodyB,
             bodyC;
-        
+
         for (row = 0; row < rows; row++) {
             for (col = 1; col < columns; col++) {
                 bodyA = bodies[(col - 1) + (row * columns)];
@@ -156,10 +150,10 @@ var Bodies = require('./Bodies');
         }
 
         composite.label += ' Mesh';
-        
+
         return composite;
     };
-    
+
     /**
      * Create a new composite containing bodies created in the callback in a pyramid arrangement.
      * This function uses the body's bounds to prevent overlaps.
@@ -173,30 +167,30 @@ var Bodies = require('./Bodies');
      * @param {function} callback
      * @return {composite} A new composite containing objects created in the callback
      */
-    Composites.pyramid = function(xx, yy, columns, rows, columnGap, rowGap, callback) {
+    static pyramid(xx, yy, columns, rows, columnGap, rowGap, callback) {
         return Composites.stack(xx, yy, columns, rows, columnGap, rowGap, function(x, y, column, row, lastBody, i) {
             var actualRows = Math.min(rows, Math.ceil(columns / 2)),
                 lastBodyWidth = lastBody ? lastBody.bounds.max.x - lastBody.bounds.min.x : 0;
-            
+
             if (row > actualRows)
                 return;
-            
+
             // reverse row order
             row = actualRows - row;
-            
+
             var start = row,
                 end = columns - 1 - row;
 
             if (column < start || column > end)
                 return;
-            
+
             // retroactively fix the first body's position, since width was unknown
             if (i === 1) {
                 Body.translate(lastBody, { x: (column + (columns % 2 === 1 ? 1 : -1)) * lastBodyWidth, y: 0 });
             }
 
             var xOffset = lastBody ? column * lastBodyWidth : 0;
-            
+
             return callback(xx + xOffset + column * columnGap, y, column, row, lastBody, i);
         });
     };
@@ -211,12 +205,12 @@ var Bodies = require('./Bodies');
      * @param {number} length
      * @return {composite} A new composite newtonsCradle body
      */
-    Composites.newtonsCradle = function(xx, yy, number, size, length) {
+    static newtonsCradle(xx, yy, number, size, length) {
         var newtonsCradle = Composite.create({ label: 'Newtons Cradle' });
 
         for (var i = 0; i < number; i++) {
             var separation = 1.9,
-                circle = Bodies.circle(xx + i * (size * separation), yy + length, size, 
+                circle = Bodies.circle(xx + i * (size * separation), yy + length, size,
                     { inertia: Infinity, restitution: 1, friction: 0, frictionAir: 0.0001, slop: 1 }),
                 constraint = Constraint.create({ pointA: { x: xx + i * (size * separation), y: yy }, bodyB: circle });
 
@@ -226,7 +220,7 @@ var Bodies = require('./Bodies');
 
         return newtonsCradle;
     };
-    
+
     /**
      * Creates a composite with simple car setup of bodies and constraints.
      * @method car
@@ -237,15 +231,15 @@ var Bodies = require('./Bodies');
      * @param {number} wheelSize
      * @return {composite} A new composite car body
      */
-    Composites.car = function(xx, yy, width, height, wheelSize) {
+    static car(xx, yy, width, height, wheelSize) {
         var group = Body.nextGroup(true),
             wheelBase = 20,
             wheelAOffset = -width * 0.5 + wheelBase,
             wheelBOffset = width * 0.5 - wheelBase,
             wheelYOffset = 0;
-    
+
         var car = Composite.create({ label: 'Car' }),
-            body = Bodies.rectangle(xx, yy, width, height, { 
+            body = Bodies.rectangle(xx, yy, width, height, {
                 collisionFilter: {
                     group: group
                 },
@@ -254,21 +248,21 @@ var Bodies = require('./Bodies');
                 },
                 density: 0.0002
             });
-    
-        var wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelSize, { 
+
+        var wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelSize, {
             collisionFilter: {
                 group: group
             },
             friction: 0.8
         });
-                    
-        var wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelYOffset, wheelSize, { 
+
+        var wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelYOffset, wheelSize, {
             collisionFilter: {
                 group: group
             },
             friction: 0.8
         });
-                    
+
         var axelA = Constraint.create({
             bodyB: body,
             pointB: { x: wheelAOffset, y: wheelYOffset },
@@ -276,7 +270,7 @@ var Bodies = require('./Bodies');
             stiffness: 1,
             length: 0
         });
-                        
+
         var axelB = Constraint.create({
             bodyB: body,
             pointB: { x: wheelBOffset, y: wheelYOffset },
@@ -284,7 +278,7 @@ var Bodies = require('./Bodies');
             stiffness: 1,
             length: 0
         });
-        
+
         Composite.addBody(car, body);
         Composite.addBody(car, wheelA);
         Composite.addBody(car, wheelB);
@@ -309,7 +303,7 @@ var Bodies = require('./Bodies');
      * @param {} constraintOptions
      * @return {composite} A new composite softBody
      */
-    Composites.softBody = function(xx, yy, columns, rows, columnGap, rowGap, crossBrace, particleRadius, particleOptions, constraintOptions) {
+    static softBody(xx, yy, columns, rows, columnGap, rowGap, crossBrace, particleRadius, particleOptions, constraintOptions) {
         particleOptions = Common.extend({ inertia: Infinity }, particleOptions);
         constraintOptions = Common.extend({ stiffness: 0.2, render: { type: 'line', anchors: false } }, constraintOptions);
 
@@ -323,5 +317,4 @@ var Bodies = require('./Bodies');
 
         return softBody;
     };
-
-})();
+}

@@ -1,17 +1,11 @@
+import {Contact} from "./Contact";
+
 /**
 * The `Matter.Pair` module contains methods for creating and manipulating collision pairs.
 *
 * @class Pair
 */
-
-var Pair = {};
-
-module.exports = Pair;
-
-var Contact = require('./Contact');
-
-(function() {
-    
+export class Pair {
     /**
      * Creates a pair.
      * @method create
@@ -19,7 +13,7 @@ var Contact = require('./Contact');
      * @param {number} timestamp
      * @return {pair} A new pair
      */
-    Pair.create = function(collision, timestamp) {
+    static create(collision, timestamp) {
         var bodyA = collision.bodyA,
             bodyB = collision.bodyB,
             parentA = collision.parentA,
@@ -47,7 +41,7 @@ var Contact = require('./Contact');
         Pair.update(pair, collision, timestamp);
 
         return pair;
-    };
+    }
 
     /**
      * Updates a pair given a collision.
@@ -56,13 +50,13 @@ var Contact = require('./Contact');
      * @param {collision} collision
      * @param {number} timestamp
      */
-    Pair.update = function(pair, collision, timestamp) {
+    static update(pair, collision, timestamp) {
         var contacts = pair.contacts,
             supports = collision.supports,
             activeContacts = pair.activeContacts,
             parentA = collision.parentA,
             parentB = collision.parentB;
-        
+
         pair.collision = collision;
         pair.inverseMass = parentA.inverseMass + parentB.inverseMass;
         pair.friction = Math.min(parentA.friction, parentB.friction);
@@ -70,7 +64,7 @@ var Contact = require('./Contact');
         pair.restitution = Math.max(parentA.restitution, parentB.restitution);
         pair.slop = Math.max(parentA.slop, parentB.slop);
         activeContacts.length = 0;
-        
+
         if (collision.collided) {
             for (var i = 0; i < supports.length; i++) {
                 var support = supports[i],
@@ -90,8 +84,8 @@ var Contact = require('./Contact');
             if (pair.isActive === true)
                 Pair.setActive(pair, false, timestamp);
         }
-    };
-    
+    }
+
     /**
      * Set a pair as active or inactive.
      * @method setActive
@@ -99,7 +93,7 @@ var Contact = require('./Contact');
      * @param {bool} isActive
      * @param {number} timestamp
      */
-    Pair.setActive = function(pair, isActive, timestamp) {
+    static setActive(pair, isActive, timestamp) {
         if (isActive) {
             pair.isActive = true;
             pair.timeUpdated = timestamp;
@@ -107,7 +101,7 @@ var Contact = require('./Contact');
             pair.isActive = false;
             pair.activeContacts.length = 0;
         }
-    };
+    }
 
     /**
      * Get the id for the given pair.
@@ -116,12 +110,11 @@ var Contact = require('./Contact');
      * @param {body} bodyB
      * @return {string} Unique pairId
      */
-    Pair.id = function(bodyA, bodyB) {
+    static id(bodyA, bodyB) {
         if (bodyA.id < bodyB.id) {
             return 'A' + bodyA.id + 'B' + bodyB.id;
         } else {
             return 'A' + bodyB.id + 'B' + bodyA.id;
         }
-    };
-
-})();
+    }
+}

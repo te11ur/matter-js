@@ -1,30 +1,24 @@
+import {Common} from "./Common";
+
 /**
 * The `Matter.Mouse` module contains methods for creating and manipulating mouse inputs.
 *
 * @class Mouse
 */
-
-var Mouse = {};
-
-module.exports = Mouse;
-
-var Common = require('../core/Common');
-
-(function() {
-
+export class Mouse {
     /**
      * Creates a mouse input.
      * @method create
      * @param {HTMLElement} element
      * @return {mouse} A new mouse
      */
-    Mouse.create = function(element) {
+    static create(element) {
         var mouse = {};
 
         if (!element) {
             Common.log('Mouse.create: element was undefined, defaulting to document.body', 'warn');
         }
-        
+
         mouse.element = element || document.body;
         mouse.absolute = { x: 0, y: 0 };
         mouse.position = { x: 0, y: 0 };
@@ -42,8 +36,8 @@ var Common = require('../core/Common');
             mouseup: null,
             mousewheel: null
         };
-        
-        mouse.mousemove = function(event) { 
+
+        mouse.mousemove = function(event) {
             var position = Mouse._getRelativeMousePosition(event, mouse.element, mouse.pixelRatio),
                 touches = event.changedTouches;
 
@@ -58,7 +52,7 @@ var Common = require('../core/Common');
             mouse.position.y = mouse.absolute.y * mouse.scale.y + mouse.offset.y;
             mouse.sourceEvents.mousemove = event;
         };
-        
+
         mouse.mousedown = function(event) {
             var position = Mouse._getRelativeMousePosition(event, mouse.element, mouse.pixelRatio),
                 touches = event.changedTouches;
@@ -78,7 +72,7 @@ var Common = require('../core/Common');
             mouse.mousedownPosition.y = mouse.position.y;
             mouse.sourceEvents.mousedown = event;
         };
-        
+
         mouse.mouseup = function(event) {
             var position = Mouse._getRelativeMousePosition(event, mouse.element, mouse.pixelRatio),
                 touches = event.changedTouches;
@@ -86,7 +80,7 @@ var Common = require('../core/Common');
             if (touches) {
                 event.preventDefault();
             }
-            
+
             mouse.button = -1;
             mouse.absolute.x = position.x;
             mouse.absolute.y = position.y;
@@ -113,13 +107,13 @@ var Common = require('../core/Common');
      * @param {mouse} mouse
      * @param {HTMLElement} element
      */
-    Mouse.setElement = function(mouse, element) {
+    static setElement(mouse, element) {
         mouse.element = element;
 
         element.addEventListener('mousemove', mouse.mousemove);
         element.addEventListener('mousedown', mouse.mousedown);
         element.addEventListener('mouseup', mouse.mouseup);
-        
+
         element.addEventListener('mousewheel', mouse.mousewheel);
         element.addEventListener('DOMMouseScroll', mouse.mousewheel);
 
@@ -133,7 +127,7 @@ var Common = require('../core/Common');
      * @method clearSourceEvents
      * @param {mouse} mouse
      */
-    Mouse.clearSourceEvents = function(mouse) {
+    static clearSourceEvents(mouse) {
         mouse.sourceEvents.mousemove = null;
         mouse.sourceEvents.mousedown = null;
         mouse.sourceEvents.mouseup = null;
@@ -147,7 +141,7 @@ var Common = require('../core/Common');
      * @param {mouse} mouse
      * @param {vector} offset
      */
-    Mouse.setOffset = function(mouse, offset) {
+    static setOffset(mouse, offset) {
         mouse.offset.x = offset.x;
         mouse.offset.y = offset.y;
         mouse.position.x = mouse.absolute.x * mouse.scale.x + mouse.offset.x;
@@ -160,13 +154,13 @@ var Common = require('../core/Common');
      * @param {mouse} mouse
      * @param {vector} scale
      */
-    Mouse.setScale = function(mouse, scale) {
+    static setScale(mouse, scale) {
         mouse.scale.x = scale.x;
         mouse.scale.y = scale.y;
         mouse.position.x = mouse.absolute.x * mouse.scale.x + mouse.offset.x;
         mouse.position.y = mouse.absolute.y * mouse.scale.y + mouse.offset.y;
     };
-    
+
     /**
      * Gets the mouse position relative to an element given a screen pixel ratio.
      * @method _getRelativeMousePosition
@@ -176,14 +170,14 @@ var Common = require('../core/Common');
      * @param {number} pixelRatio
      * @return {}
      */
-    Mouse._getRelativeMousePosition = function(event, element, pixelRatio) {
+    static _getRelativeMousePosition(event, element, pixelRatio) {
         var elementBounds = element.getBoundingClientRect(),
             rootNode = (document.documentElement || document.body.parentNode || document.body),
             scrollX = (window.pageXOffset !== undefined) ? window.pageXOffset : rootNode.scrollLeft,
             scrollY = (window.pageYOffset !== undefined) ? window.pageYOffset : rootNode.scrollTop,
             touches = event.changedTouches,
             x, y;
-        
+
         if (touches) {
             x = touches[0].pageX - elementBounds.left - scrollX;
             y = touches[0].pageY - elementBounds.top - scrollY;
@@ -192,10 +186,9 @@ var Common = require('../core/Common');
             y = event.pageY - elementBounds.top - scrollY;
         }
 
-        return { 
+        return {
             x: x / (element.clientWidth / (element.width || element.clientWidth) * pixelRatio),
             y: y / (element.clientHeight / (element.height || element.clientHeight) * pixelRatio)
         };
     };
-
-})();
+}

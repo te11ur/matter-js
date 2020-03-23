@@ -1,3 +1,5 @@
+import {Common} from "./Common";
+
 /**
 * The `Matter.Events` module contains methods to fire and listen to events on other objects.
 *
@@ -5,15 +7,7 @@
 *
 * @class Events
 */
-
-var Events = {};
-
-module.exports = Events;
-
-var Common = require('./Common');
-
-(function() {
-
+export class Events {
     /**
      * Subscribes a callback function to the given object's `eventName`.
      * @method on
@@ -21,7 +15,7 @@ var Common = require('./Common');
      * @param {string} eventNames
      * @param {function} callback
      */
-    Events.on = function(object, eventNames, callback) {
+    static on(object, eventNames, callback) {
         var names = eventNames.split(' '),
             name;
 
@@ -42,7 +36,7 @@ var Common = require('./Common');
      * @param {string} eventNames
      * @param {function} callback
      */
-    Events.off = function(object, eventNames, callback) {
+    static off(object, eventNames, callback) {
         if (!eventNames) {
             object.events = {};
             return;
@@ -78,14 +72,14 @@ var Common = require('./Common');
      * @param {string} eventNames
      * @param {} event
      */
-    Events.trigger = function(object, eventNames, event) {
+    static trigger(object, eventNames, event) {
         var names,
             name,
             callbacks,
             eventClone;
 
         var events = object.events;
-        
+
         if (events && Common.keys(events).length > 0) {
             if (!event)
                 event = {};
@@ -108,5 +102,4 @@ var Common = require('./Common');
             }
         }
     };
-
-})();
+}

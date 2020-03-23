@@ -1,3 +1,6 @@
+import {Common} from "../core/Common";
+import {Composite} from "./Composite";
+
 /**
 * The `Matter.World` module contains methods for creating and manipulating the world composite.
 * A `Matter.World` is a `Matter.Composite` body, which is a collection of `Matter.Body`, `Matter.Constraint` and other `Matter.Composite`.
@@ -10,17 +13,7 @@
 * @class World
 * @extends Composite
 */
-
-var World = {};
-
-module.exports = World;
-
-var Composite = require('./Composite');
-var Constraint = require('../constraint/Constraint');
-var Common = require('../core/Common');
-
-(function() {
-
+export class World {
     /**
      * Creates a new world composite. The options parameter is an object that specifies any properties you wish to override the defaults.
      * See the properties section below for detailed information on what you can pass via the `options` object.
@@ -29,7 +22,7 @@ var Common = require('../core/Common');
      * @param {} options
      * @return {world} A new world
      */
-    World.create = function(options) {
+    static create(options) {
         var composite = Composite.create();
 
         var defaults = {
@@ -39,14 +32,14 @@ var Common = require('../core/Common');
                 y: 1,
                 scale: 0.001
             },
-            bounds: { 
-                min: { x: -Infinity, y: -Infinity }, 
-                max: { x: Infinity, y: Infinity } 
+            bounds: {
+                min: { x: -Infinity, y: -Infinity },
+                max: { x: Infinity, y: Infinity }
             }
         };
-        
+
         return Common.extend(composite, defaults, options);
-    };
+    }
 
     /*
     *
@@ -95,7 +88,7 @@ var Common = require('../core/Common');
 
     // World is a Composite body
     // see src/module/Outro.js for these aliases:
-    
+
     /**
      * An alias for Composite.add
      * @method add
@@ -127,21 +120,20 @@ var Common = require('../core/Common');
      * @param {composite} composite
      * @return {world} The original world with the objects from composite added
      */
-    
-    /**
-      * An alias for Composite.addBody
-      * @method addBody
-      * @param {world} world
-      * @param {body} body
-      * @return {world} The original world with the body added
-      */
 
     /**
-      * An alias for Composite.addConstraint
-      * @method addConstraint
-      * @param {world} world
-      * @param {constraint} constraint
-      * @return {world} The original world with the constraint added
-      */
+     * An alias for Composite.addBody
+     * @method addBody
+     * @param {world} world
+     * @param {body} body
+     * @return {world} The original world with the body added
+     */
 
-})();
+    /**
+     * An alias for Composite.addConstraint
+     * @method addConstraint
+     * @param {world} world
+     * @param {constraint} constraint
+     * @return {world} The original world with the constraint added
+     */
+}

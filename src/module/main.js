@@ -1,47 +1,76 @@
-var Matter = module.exports = require('../core/Matter');
+import {Matter as MatterCore} from '../core/Matter';
+import {Body} from "../body/Body";
+import {Composite} from "../body/Composite";
+import {World} from "../body/World";
+import {Contact} from "../collision/Contact";
+import {Detector} from "../collision/Detector";
+import {Grid} from "../collision/Grid";
+import {Pairs} from "../collision/Pairs";
+import {Pair} from "../collision/Pair";
+import {Query} from "../collision/Query";
+import {Resolver} from "../collision/Resolver";
+import {SAT} from "../collision/SAT";
+import {Constraint} from "../constraint/Constraint";
+import {MouseConstraint} from "../constraint/MouseConstraint";
+import {Common} from "../core/Common";
+import {Engine} from "../core/Engine";
+import {Events} from "../core/Events";
+import {Mouse} from "../core/Mouse";
+import {Runner} from "../core/Runner";
+import {Sleeping} from "../core/Sleeping";
+import {Plugin} from "../core/Plugin";
+import {Metrics} from "../core/Metrics";
+import {Bodies} from "../factory/Bodies";
+import {Composites} from "../factory/Composites";
+import {Axes} from "../geometry/Axes";
+import {Bounds} from "../geometry/Bounds";
+import {Svg} from "../geometry/Svg";
+import {Vector} from "../geometry/Vector";
+import {Vertices} from "../geometry/Vertices";
+import {Render} from "../render/Render";
 
-Matter.Body = require('../body/Body');
-Matter.Composite = require('../body/Composite');
-Matter.World = require('../body/World');
+export class Matter extends MatterCore {
+    static Body = Body;
+    static Composite = Composite;
+    static World = World;
 
-Matter.Contact = require('../collision/Contact');
-Matter.Detector = require('../collision/Detector');
-Matter.Grid = require('../collision/Grid');
-Matter.Pairs = require('../collision/Pairs');
-Matter.Pair = require('../collision/Pair');
-Matter.Query = require('../collision/Query');
-Matter.Resolver = require('../collision/Resolver');
-Matter.SAT = require('../collision/SAT');
+    static Contact = Contact;
+    static Detector = Detector;
+    static Grid = Grid;
+    static Pairs = Pairs;
+    static Pair = Pair;
+    static Query = Query;
+    static Resolver = Resolver;
+    static SAT = SAT;
 
-Matter.Constraint = require('../constraint/Constraint');
-Matter.MouseConstraint = require('../constraint/MouseConstraint');
+    static Constraint = Constraint;
+    static MouseConstraint = MouseConstraint;
 
-Matter.Common = require('../core/Common');
-Matter.Engine = require('../core/Engine');
-Matter.Events = require('../core/Events');
-Matter.Mouse = require('../core/Mouse');
-Matter.Runner = require('../core/Runner');
-Matter.Sleeping = require('../core/Sleeping');
-Matter.Plugin = require('../core/Plugin');
+    static Common = Common;
+    static Engine = Engine;
+    static Events = Events;
+    static Mouse = Mouse;
+    static Runner = Runner;
+    static Sleeping = Sleeping;
+    static Plugin = Plugin;
 
 // @if DEBUG
-Matter.Metrics = require('../core/Metrics');
+    static Metrics = Metrics;
 // @endif
 
-Matter.Bodies = require('../factory/Bodies');
-Matter.Composites = require('../factory/Composites');
+    static Bodies =Bodies;
+    static Composites = Composites;
 
-Matter.Axes = require('../geometry/Axes');
-Matter.Bounds = require('../geometry/Bounds');
-Matter.Svg = require('../geometry/Svg');
-Matter.Vector = require('../geometry/Vector');
-Matter.Vertices = require('../geometry/Vertices');
+    static Axes = Axes;
+    static Bounds = Bounds;
+    static Svg = Svg;
+    static Vector = Vector;
+    static Vertices = Vertices;
 
-Matter.Render = require('../render/Render');
-Matter.RenderPixi = require('../render/RenderPixi');
+    static Render = Render;
+}
 
 // aliases
-
 Matter.World.add = Matter.Composite.add;
 Matter.World.remove = Matter.Composite.remove;
 Matter.World.addComposite = Matter.Composite.addComposite;

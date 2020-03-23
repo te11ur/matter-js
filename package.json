@@ -45,7 +45,9 @@
     "test-save": "SAVE=true jest",
     "test-watch": "jest --watch"
   },
-  "dependencies": {},
+  "dependencies": {
+    "poly-decomp": "^0.3.0"
+  },
   "files": [
     "src",
     "build",

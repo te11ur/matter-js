@@ -1,25 +1,19 @@
 // @if DEBUG
+import {Composite} from "../body/Composite";
+import {Common} from "./Common";
+
 /**
 * _Internal Class_, not generally used outside of the engine's internals.
 *
 */
-
-var Metrics = {};
-
-module.exports = Metrics;
-
-var Composite = require('../body/Composite');
-var Common = require('./Common');
-
-(function() {
-
+export class Metrics {
     /**
      * Creates a new metrics.
      * @method create
      * @private
      * @return {metrics} A new metrics
      */
-    Metrics.create = function(options) {
+    static create(options) {
         var defaults = {
             extended: false,
             narrowDetections: 0,
@@ -46,7 +40,7 @@ var Common = require('./Common');
      * @private
      * @param {metrics} metrics
      */
-    Metrics.reset = function(metrics) {
+    static reset(metrics) {
         if (metrics.extended) {
             metrics.narrowDetections = 0;
             metrics.narrowphaseTests = 0;
@@ -71,7 +65,7 @@ var Common = require('./Common');
      * @param {metrics} metrics
      * @param {engine} engine
      */
-    Metrics.update = function(metrics, engine) {
+    static update(metrics, engine) {
         if (metrics.extended) {
             var world = engine.world,
                 bodies = Composite.allBodies(world);
@@ -88,6 +82,5 @@ var Common = require('./Common');
             //    metrics.buckets = Common.keys(broadphase.instance.buckets).length;
         }
     };
-
-})();
+}
 // @endif
