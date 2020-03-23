@@ -9,13 +9,7 @@
 */
 
 // TODO: consider params for reusing vector objects
-
-var Vector = {};
-
-module.exports = Vector;
-
-(function() {
-
+export class Vector {
     /**
      * Creates a new vector.
      * @method create
@@ -23,7 +17,7 @@ module.exports = Vector;
      * @param {number} y
      * @return {vector} A new vector
      */
-    Vector.create = function(x, y) {
+    static create(x, y) {
         return { x: x || 0, y: y || 0 };
     };
 
@@ -33,7 +27,7 @@ module.exports = Vector;
      * @param {vector} vector
      * @return {vector} A new cloned vector
      */
-    Vector.clone = function(vector) {
+    static clone(vector) {
         return { x: vector.x, y: vector.y };
     };
 
@@ -43,7 +37,7 @@ module.exports = Vector;
      * @param {vector} vector
      * @return {number} The magnitude of the vector
      */
-    Vector.magnitude = function(vector) {
+    static magnitude(vector) {
         return Math.sqrt((vector.x * vector.x) + (vector.y * vector.y));
     };
 
@@ -53,7 +47,7 @@ module.exports = Vector;
      * @param {vector} vector
      * @return {number} The squared magnitude of the vector
      */
-    Vector.magnitudeSquared = function(vector) {
+    static magnitudeSquared(vector) {
         return (vector.x * vector.x) + (vector.y * vector.y);
     };
 
@@ -65,7 +59,7 @@ module.exports = Vector;
      * @param {vector} [output]
      * @return {vector} The vector rotated about (0, 0)
      */
-    Vector.rotate = function(vector, angle, output) {
+    static rotate(vector, angle, output) {
         var cos = Math.cos(angle), sin = Math.sin(angle);
         if (!output) output = {};
         var x = vector.x * cos - vector.y * sin;
@@ -83,7 +77,7 @@ module.exports = Vector;
      * @param {vector} [output]
      * @return {vector} A new vector rotated about the point
      */
-    Vector.rotateAbout = function(vector, angle, point, output) {
+    static rotateAbout(vector, angle, point, output) {
         var cos = Math.cos(angle), sin = Math.sin(angle);
         if (!output) output = {};
         var x = point.x + ((vector.x - point.x) * cos - (vector.y - point.y) * sin);
@@ -98,7 +92,7 @@ module.exports = Vector;
      * @param {vector} vector
      * @return {vector} A new vector normalised
      */
-    Vector.normalise = function(vector) {
+    static normalise(vector) {
         var magnitude = Vector.magnitude(vector);
         if (magnitude === 0)
             return { x: 0, y: 0 };
@@ -112,7 +106,7 @@ module.exports = Vector;
      * @param {vector} vectorB
      * @return {number} The dot product of the two vectors
      */
-    Vector.dot = function(vectorA, vectorB) {
+    static dot(vectorA, vectorB) {
         return (vectorA.x * vectorB.x) + (vectorA.y * vectorB.y);
     };
 
@@ -123,7 +117,7 @@ module.exports = Vector;
      * @param {vector} vectorB
      * @return {number} The cross product of the two vectors
      */
-    Vector.cross = function(vectorA, vectorB) {
+    static cross(vectorA, vectorB) {
         return (vectorA.x * vectorB.y) - (vectorA.y * vectorB.x);
     };
 
@@ -135,7 +129,7 @@ module.exports = Vector;
      * @param {vector} vectorC
      * @return {number} The cross product of the three vectors
      */
-    Vector.cross3 = function(vectorA, vectorB, vectorC) {
+    static cross3(vectorA, vectorB, vectorC) {
         return (vectorB.x - vectorA.x) * (vectorC.y - vectorA.y) - (vectorB.y - vectorA.y) * (vectorC.x - vectorA.x);
     };
 
@@ -147,7 +141,7 @@ module.exports = Vector;
      * @param {vector} [output]
      * @return {vector} A new vector of vectorA and vectorB added
      */
-    Vector.add = function(vectorA, vectorB, output) {
+    static add(vectorA, vectorB, output) {
         if (!output) output = {};
         output.x = vectorA.x + vectorB.x;
         output.y = vectorA.y + vectorB.y;
@@ -162,7 +156,7 @@ module.exports = Vector;
      * @param {vector} [output]
      * @return {vector} A new vector of vectorA and vectorB subtracted
      */
-    Vector.sub = function(vectorA, vectorB, output) {
+    static sub(vectorA, vectorB, output) {
         if (!output) output = {};
         output.x = vectorA.x - vectorB.x;
         output.y = vectorA.y - vectorB.y;
@@ -176,7 +170,7 @@ module.exports = Vector;
      * @param {number} scalar
      * @return {vector} A new vector multiplied by scalar
      */
-    Vector.mult = function(vector, scalar) {
+    static mult(vector, scalar) {
         return { x: vector.x * scalar, y: vector.y * scalar };
     };
 
@@ -187,7 +181,7 @@ module.exports = Vector;
      * @param {number} scalar
      * @return {vector} A new vector divided by scalar
      */
-    Vector.div = function(vector, scalar) {
+    static div(vector, scalar) {
         return { x: vector.x / scalar, y: vector.y / scalar };
     };
 
@@ -198,7 +192,7 @@ module.exports = Vector;
      * @param {bool} [negate=false]
      * @return {vector} The perpendicular vector
      */
-    Vector.perp = function(vector, negate) {
+    static perp(vector, negate) {
         negate = negate === true ? -1 : 1;
         return { x: negate * -vector.y, y: negate * vector.x };
     };
@@ -209,7 +203,7 @@ module.exports = Vector;
      * @param {vector} vector
      * @return {vector} The negated vector
      */
-    Vector.neg = function(vector) {
+    static neg(vector) {
         return { x: -vector.x, y: -vector.y };
     };
 
@@ -220,7 +214,7 @@ module.exports = Vector;
      * @param {vector} vectorB
      * @return {number} The angle in radians
      */
-    Vector.angle = function(vectorA, vectorB) {
+    static angle(vectorA, vectorB) {
         return Math.atan2(vectorB.y - vectorA.y, vectorB.x - vectorA.x);
     };
 
@@ -230,10 +224,9 @@ module.exports = Vector;
      * @type {vector[]}
      * @private
      */
-    Vector._temp = [
-        Vector.create(), Vector.create(), 
-        Vector.create(), Vector.create(), 
+    static _temp = [
+        Vector.create(), Vector.create(),
+        Vector.create(), Vector.create(),
         Vector.create(), Vector.create()
     ];
-
-})();
+}

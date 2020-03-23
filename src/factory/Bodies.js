@@ -1,3 +1,10 @@
+import * as poly from 'poly-decomp';
+import {Body} from "../body/Body";
+import {Common} from "../core/Common";
+import {Bounds} from "../geometry/Bounds";
+import {Vector} from "../geometry/Vector";
+import {Vertices} from "../geometry/Vertices";
+
 /**
 * The `Matter.Bodies` module contains factory methods for creating rigid body models 
 * with commonly used body configurations (such as rectangles, circles and other polygons).
@@ -8,21 +15,9 @@
 */
 
 // TODO: true circle bodies
-
-var Bodies = {};
-
-module.exports = Bodies;
-
-var Vertices = require('../geometry/Vertices');
-var Common = require('../core/Common');
-var Body = require('../body/Body');
-var Bounds = require('../geometry/Bounds');
-var Vector = require('../geometry/Vector');
-
-(function() {
-
+export class Bodies {
     /**
-     * Creates a new rigid body model with a rectangle hull. 
+     * Creates a new rigid body model with a rectangle hull.
      * The options parameter is an object that specifies any properties you wish to override the defaults.
      * See the properties section of the `Matter.Body` module for detailed information on what you can pass via the `options` object.
      * @method rectangle
@@ -33,10 +28,10 @@ var Vector = require('../geometry/Vector');
      * @param {object} [options]
      * @return {body} A new rectangle body
      */
-    Bodies.rectangle = function(x, y, width, height, options) {
+    static rectangle(x, y, width, height, options) {
         options = options || {};
 
-        var rectangle = { 
+        var rectangle = {
             label: 'Rectangle Body',
             position: { x: x, y: y },
             vertices: Vertices.fromPath('L 0 0 L ' + width + ' 0 L ' + width + ' ' + height + ' L 0 ' + height)
@@ -44,16 +39,16 @@ var Vector = require('../geometry/Vector');
 
         if (options.chamfer) {
             var chamfer = options.chamfer;
-            rectangle.vertices = Vertices.chamfer(rectangle.vertices, chamfer.radius, 
+            rectangle.vertices = Vertices.chamfer(rectangle.vertices, chamfer.radius,
                 chamfer.quality, chamfer.qualityMin, chamfer.qualityMax);
             delete options.chamfer;
         }
 
         return Body.create(Common.extend({}, rectangle, options));
     };
-    
+
     /**
-     * Creates a new rigid body model with a trapezoid hull. 
+     * Creates a new rigid body model with a trapezoid hull.
      * The options parameter is an object that specifies any properties you wish to override the defaults.
      * See the properties section of the `Matter.Body` module for detailed information on what you can pass via the `options` object.
      * @method trapezoid
@@ -65,12 +60,12 @@ var Vector = require('../geometry/Vector');
      * @param {object} [options]
      * @return {body} A new trapezoid body
      */
-    Bodies.trapezoid = function(x, y, width, height, slope, options) {
+    static trapezoid(x, y, width, height, slope, options) {
         options = options || {};
 
         slope *= 0.5;
         var roof = (1 - (slope * 2)) * width;
-        
+
         var x1 = width * slope,
             x2 = x1 + roof,
             x3 = x2 + x1,
@@ -82,7 +77,7 @@ var Vector = require('../geometry/Vector');
             verticesPath = 'L 0 0 L ' + x2 + ' ' + (-height) + ' L ' + x3 + ' 0';
         }
 
-        var trapezoid = { 
+        var trapezoid = {
             label: 'Trapezoid Body',
             position: { x: x, y: y },
             vertices: Vertices.fromPath(verticesPath)
@@ -90,7 +85,7 @@ var Vector = require('../geometry/Vector');
 
         if (options.chamfer) {
             var chamfer = options.chamfer;
-            trapezoid.vertices = Vertices.chamfer(trapezoid.vertices, chamfer.radius, 
+            trapezoid.vertices = Vertices.chamfer(trapezoid.vertices, chamfer.radius,
                 chamfer.quality, chamfer.qualityMin, chamfer.qualityMax);
             delete options.chamfer;
         }
@@ -99,7 +94,7 @@ var Vector = require('../geometry/Vector');
     };
 
     /**
-     * Creates a new rigid body model with a circle hull. 
+     * Creates a new rigid body model with a circle hull.
      * The options parameter is an object that specifies any properties you wish to override the defaults.
      * See the properties section of the `Matter.Body` module for detailed information on what you can pass via the `options` object.
      * @method circle
@@ -110,14 +105,14 @@ var Vector = require('../geometry/Vector');
      * @param {number} [maxSides]
      * @return {body} A new circle body
      */
-    Bodies.circle = function(x, y, radius, options, maxSides) {
+    static circle(x, y, radius, options, maxSides) {
         options = options || {};
 
         var circle = {
             label: 'Circle Body',
             circleRadius: radius
         };
-        
+
         // approximate circles with polygons until true circles implemented in SAT
         maxSides = maxSides || 25;
         var sides = Math.ceil(Math.max(10, Math.min(maxSides, radius)));
@@ -130,7 +125,7 @@ var Vector = require('../geometry/Vector');
     };
 
     /**
-     * Creates a new rigid body model with a regular polygon hull with the given number of sides. 
+     * Creates a new rigid body model with a regular polygon hull with the given number of sides.
      * The options parameter is an object that specifies any properties you wish to override the defaults.
      * See the properties section of the `Matter.Body` module for detailed information on what you can pass via the `options` object.
      * @method polygon
@@ -141,7 +136,7 @@ var Vector = require('../geometry/Vector');
      * @param {object} [options]
      * @return {body} A new regular polygon body
      */
-    Bodies.polygon = function(x, y, sides, radius, options) {
+    static polygon(x, y, sides, radius, options) {
         options = options || {};
 
         if (sides < 3)
@@ -159,7 +154,7 @@ var Vector = require('../geometry/Vector');
             path += 'L ' + xx.toFixed(3) + ' ' + yy.toFixed(3) + ' ';
         }
 
-        var polygon = { 
+        var polygon = {
             label: 'Polygon Body',
             position: { x: x, y: y },
             vertices: Vertices.fromPath(path)
@@ -167,7 +162,7 @@ var Vector = require('../geometry/Vector');
 
         if (options.chamfer) {
             var chamfer = options.chamfer;
-            polygon.vertices = Vertices.chamfer(polygon.vertices, chamfer.radius, 
+            polygon.vertices = Vertices.chamfer(polygon.vertices, chamfer.radius,
                 chamfer.quality, chamfer.qualityMin, chamfer.qualityMax);
             delete options.chamfer;
         }
@@ -195,8 +190,8 @@ var Vector = require('../geometry/Vector');
      * @param {number} [minimumArea=10]
      * @return {body}
      */
-    Bodies.fromVertices = function(x, y, vertexSets, options, flagInternal, removeCollinear, minimumArea) {
-        var decomp = global.decomp || require('poly-decomp'),
+    static fromVertices(x, y, vertexSets, options, flagInternal, removeCollinear, minimumArea) {
+        var decomp = global.decomp || poly,
             body,
             parts,
             isConvex,
@@ -327,5 +322,4 @@ var Vector = require('../geometry/Vector');
             return parts[0];
         }
     };
-
-})();
+}

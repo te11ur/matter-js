@@ -1,3 +1,10 @@
+import {Common} from "../core/Common";
+import {Sleeping} from "../core/Sleeping";
+import {Axes} from "../geometry/Axes";
+import {Bounds} from "../geometry/Bounds";
+import {Vector} from "../geometry/Vector";
+import {Vertices} from "../geometry/Vertices";
+
 /**
 * The `Matter.Constraint` module contains methods for creating and manipulating constraints.
 * Constraints are used for specifying that a fixed distance must be maintained between two bodies (or a body and a fixed world-space position).
@@ -7,23 +14,10 @@
 *
 * @class Constraint
 */
-
-var Constraint = {};
-
-module.exports = Constraint;
-
-var Vertices = require('../geometry/Vertices');
-var Vector = require('../geometry/Vector');
-var Sleeping = require('../core/Sleeping');
-var Bounds = require('../geometry/Bounds');
-var Axes = require('../geometry/Axes');
-var Common = require('../core/Common');
-
-(function() {
-
-    Constraint._warming = 0.4;
-    Constraint._torqueDampen = 1;
-    Constraint._minLength = 0.000001;
+export class Constraint {
+    static _warming = 0.4;
+    static _torqueDampen = 1;
+    static _minLength = 0.000001;
 
     /**
      * Creates a new constraint.
@@ -36,7 +30,7 @@ var Common = require('../core/Common');
      * @param {} options
      * @return {constraint} constraint
      */
-    Constraint.create = function(options) {
+    static create(options) {
         var constraint = options;
 
         // if bodies defined but no points, use body centre
@@ -49,7 +43,7 @@ var Common = require('../core/Common');
         var initialPointA = constraint.bodyA ? Vector.add(constraint.bodyA.position, constraint.pointA) : constraint.pointA,
             initialPointB = constraint.bodyB ? Vector.add(constraint.bodyB.position, constraint.pointB) : constraint.pointB,
             length = Vector.magnitude(Vector.sub(initialPointA, initialPointB));
-    
+
         constraint.length = typeof constraint.length !== 'undefined' ? constraint.length : length;
 
         // option defaults
@@ -90,7 +84,7 @@ var Common = require('../core/Common');
      * @method preSolveAll
      * @param {body[]} bodies
      */
-    Constraint.preSolveAll = function(bodies) {
+    static preSolveAll(bodies) {
         for (var i = 0; i < bodies.length; i += 1) {
             var body = bodies[i],
                 impulse = body.constraintImpulse;
@@ -112,7 +106,7 @@ var Common = require('../core/Common');
      * @param {constraint[]} constraints
      * @param {number} timeScale
      */
-    Constraint.solveAll = function(constraints, timeScale) {
+    static solveAll(constraints, timeScale) {
         // Solve fixed constraints first.
         for (var i = 0; i < constraints.length; i += 1) {
             var constraint = constraints[i],
@@ -143,7 +137,7 @@ var Common = require('../core/Common');
      * @param {constraint} constraint
      * @param {number} timeScale
      */
-    Constraint.solve = function(constraint, timeScale) {
+    static solve(constraint, timeScale) {
         var bodyA = constraint.bodyA,
             bodyB = constraint.bodyB,
             pointA = constraint.pointA,
@@ -157,7 +151,7 @@ var Common = require('../core/Common');
             Vector.rotate(pointA, bodyA.angle - constraint.angleA, pointA);
             constraint.angleA = bodyA.angle;
         }
-        
+
         // update reference angle
         if (bodyB && !bodyB.isStatic) {
             Vector.rotate(pointB, bodyB.angle - constraint.angleB, pointB);
@@ -235,7 +229,7 @@ var Common = require('../core/Common');
             // keep track of applied impulses for post solving
             bodyB.constraintImpulse.x += force.x * share;
             bodyB.constraintImpulse.y += force.y * share;
-            
+
             // apply forces
             bodyB.position.x += force.x * share;
             bodyB.position.y += force.y * share;
@@ -260,7 +254,7 @@ var Common = require('../core/Common');
      * @method postSolveAll
      * @param {body[]} bodies
      */
-    Constraint.postSolveAll = function(bodies) {
+    static postSolveAll(bodies) {
         for (var i = 0; i < bodies.length; i++) {
             var body = bodies[i],
                 impulse = body.constraintImpulse;
@@ -274,7 +268,7 @@ var Common = require('../core/Common');
             // update geometry and reset
             for (var j = 0; j < body.parts.length; j++) {
                 var part = body.parts[j];
-                
+
                 Vertices.translate(part.vertices, impulse);
 
                 if (j > 0) {
@@ -306,7 +300,7 @@ var Common = require('../core/Common');
      * @param {constraint} constraint
      * @returns {vector} the world-space position
      */
-    Constraint.pointAWorld = function(constraint) {
+    static pointAWorld(constraint) {
         return {
             x: (constraint.bodyA ? constraint.bodyA.position.x : 0) + constraint.pointA.x,
             y: (constraint.bodyA ? constraint.bodyA.position.y : 0) + constraint.pointA.y
@@ -319,7 +313,7 @@ var Common = require('../core/Common');
      * @param {constraint} constraint
      * @returns {vector} the world-space position
      */
-    Constraint.pointBWorld = function(constraint) {
+    static pointBWorld(constraint) {
         return {
             x: (constraint.bodyB ? constraint.bodyB.position.x : 0) + constraint.pointB.x,
             y: (constraint.bodyB ? constraint.bodyB.position.y : 0) + constraint.pointB.y
@@ -390,7 +384,7 @@ var Common = require('../core/Common');
      */
 
     /**
-     * A `String` that defines the constraint rendering type. 
+     * A `String` that defines the constraint rendering type.
      * The possible values are 'line', 'pin', 'spring'.
      * An appropriate render type will be automatically chosen unless one is given in options.
      *
@@ -450,7 +444,7 @@ var Common = require('../core/Common');
      */
 
     /**
-     * A `Number` that specifies the damping of the constraint, 
+     * A `Number` that specifies the damping of the constraint,
      * i.e. the amount of resistance applied to each body based on their velocities to limit the amount of oscillation.
      * Damping will only be apparent when the constraint also has a very low `stiffness`.
      * A value of `0.1` means the constraint will apply heavy damping, resulting in little to no oscillation.
@@ -462,7 +456,7 @@ var Common = require('../core/Common');
      */
 
     /**
-     * A `Number` that specifies the target resting length of the constraint. 
+     * A `Number` that specifies the target resting length of the constraint.
      * It is calculated automatically in `Constraint.create` from initial positions of the `constraint.bodyA` and `constraint.bodyB`.
      *
      * @property length
@@ -475,5 +469,4 @@ var Common = require('../core/Common');
      * @property plugin
      * @type {}
      */
-
-})();
+}

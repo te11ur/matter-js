@@ -1,26 +1,20 @@
+import {Detector} from "./Detector";
+import {Pair} from "./Pair";
+import {Common} from "../core/Common";
+
 /**
 * The `Matter.Grid` module contains methods for creating and manipulating collision broadphase grid structures.
 *
 * @class Grid
 */
-
-var Grid = {};
-
-module.exports = Grid;
-
-var Pair = require('./Pair');
-var Detector = require('./Detector');
-var Common = require('../core/Common');
-
-(function() {
-
+export class Grid {
     /**
      * Creates a new grid.
      * @method create
      * @param {} options
      * @return {grid} A new grid
      */
-    Grid.create = function(options) {
+    static create(options) {
         var defaults = {
             controller: Grid,
             detector: Detector.collisions,
@@ -58,7 +52,7 @@ var Common = require('../core/Common');
      * @param {engine} engine
      * @param {boolean} forceUpdate
      */
-    Grid.update = function(grid, bodies, engine, forceUpdate) {
+    static update(grid, bodies, engine, forceUpdate) {
         var i, col, row,
             world = engine.world,
             buckets = grid.buckets,
@@ -104,10 +98,10 @@ var Common = require('../core/Common');
                         bucket = buckets[bucketId];
 
                         var isInsideNewRegion = (col >= newRegion.startCol && col <= newRegion.endCol
-                                                && row >= newRegion.startRow && row <= newRegion.endRow);
+                            && row >= newRegion.startRow && row <= newRegion.endRow);
 
                         var isInsideOldRegion = (col >= body.region.startCol && col <= body.region.endCol
-                                                && row >= body.region.startRow && row <= body.region.endRow);
+                            && row >= body.region.startRow && row <= body.region.endRow);
 
                         // remove from old region buckets
                         if (!isInsideNewRegion && isInsideOldRegion) {
@@ -144,7 +138,7 @@ var Common = require('../core/Common');
      * @method clear
      * @param {grid} grid
      */
-    Grid.clear = function(grid) {
+    static clear(grid) {
         grid.buckets = {};
         grid.pairs = {};
         grid.pairsList = [];
@@ -158,7 +152,7 @@ var Common = require('../core/Common');
      * @param {} regionB
      * @return {} region
      */
-    Grid._regionUnion = function(regionA, regionB) {
+    static _regionUnion(regionA, regionB) {
         var startCol = Math.min(regionA.startCol, regionB.startCol),
             endCol = Math.max(regionA.endCol, regionB.endCol),
             startRow = Math.min(regionA.startRow, regionB.startRow),
@@ -175,7 +169,7 @@ var Common = require('../core/Common');
      * @param {} body
      * @return {} region
      */
-    Grid._getRegion = function(grid, body) {
+    static _getRegion(grid, body) {
         var bounds = body.bounds,
             startCol = Math.floor(bounds.min.x / grid.bucketWidth),
             endCol = Math.floor(bounds.max.x / grid.bucketWidth),
@@ -195,13 +189,13 @@ var Common = require('../core/Common');
      * @param {} endRow
      * @return {} region
      */
-    Grid._createRegion = function(startCol, endCol, startRow, endRow) {
-        return { 
+    static _createRegion(startCol, endCol, startRow, endRow) {
+        return {
             id: startCol + ',' + endCol + ',' + startRow + ',' + endRow,
-            startCol: startCol, 
-            endCol: endCol, 
-            startRow: startRow, 
-            endRow: endRow 
+            startCol: startCol,
+            endCol: endCol,
+            startRow: startRow,
+            endRow: endRow
         };
     };
 
@@ -213,7 +207,7 @@ var Common = require('../core/Common');
      * @param {} row
      * @return {string} bucket id
      */
-    Grid._getBucketId = function(column, row) {
+    static _getBucketId(column, row) {
         return 'C' + column + 'R' + row;
     };
 
@@ -225,7 +219,7 @@ var Common = require('../core/Common');
      * @param {} bucketId
      * @return {} bucket
      */
-    Grid._createBucket = function(buckets, bucketId) {
+    static _createBucket(buckets, bucketId) {
         var bucket = buckets[bucketId] = [];
         return bucket;
     };
@@ -238,7 +232,7 @@ var Common = require('../core/Common');
      * @param {} bucket
      * @param {} body
      */
-    Grid._bucketAddBody = function(grid, bucket, body) {
+    static _bucketAddBody(grid, bucket, body) {
         // add new pairs
         for (var i = 0; i < bucket.length; i++) {
             var bodyB = bucket[i];
@@ -270,7 +264,7 @@ var Common = require('../core/Common');
      * @param {} bucket
      * @param {} body
      */
-    Grid._bucketRemoveBody = function(grid, bucket, body) {
+    static _bucketRemoveBody(grid, bucket, body) {
         // remove from bucket
         bucket.splice(Common.indexOf(bucket, body), 1);
 
@@ -294,7 +288,7 @@ var Common = require('../core/Common');
      * @param {} grid
      * @return [] pairs
      */
-    Grid._createActivePairsList = function(grid) {
+    static _createActivePairsList(grid) {
         var pairKeys,
             pair,
             pairs = [];
@@ -317,5 +311,4 @@ var Common = require('../core/Common');
 
         return pairs;
     };
-    
-})();
+}

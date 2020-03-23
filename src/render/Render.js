@@ -1,3 +1,11 @@
+import {Composite} from "../body/Composite";
+import {Grid} from "../collision/Grid";
+import {Common} from "../core/Common";
+import {Events} from "../core/Events";
+import {Mouse} from "../core/Mouse";
+import {Bounds} from "../geometry/Bounds";
+import {Vector} from "../geometry/Vector";
+
 /**
 * The `Matter.Render` module is a simple HTML5 canvas based renderer for visualising instances of `Matter.Engine`.
 * It is intended for development and debugging purposes, but may also be suitable for simple games.
@@ -5,32 +13,7 @@
 *
 * @class Render
 */
-
-var Render = {};
-
-module.exports = Render;
-
-var Common = require('../core/Common');
-var Composite = require('../body/Composite');
-var Bounds = require('../geometry/Bounds');
-var Events = require('../core/Events');
-var Grid = require('../collision/Grid');
-var Vector = require('../geometry/Vector');
-var Mouse = require('../core/Mouse');
-
-(function() {
-
-    var _requestAnimationFrame,
-        _cancelAnimationFrame;
-
-    if (typeof window !== 'undefined') {
-        _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
-                                      || window.mozRequestAnimationFrame || window.msRequestAnimationFrame
-                                      || function(callback){ window.setTimeout(function() { callback(Common.now()); }, 1000 / 60); };
-
-        _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
-                                      || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
-    }
+export class Render {
 
     /**
      * Creates a new renderer. The options parameter is an object that specifies any properties you wish to override the defaults.
@@ -40,7 +23,7 @@ var Mouse = require('../core/Mouse');
      * @param {object} [options]
      * @return {render} A new renderer
      */
-    Render.create = function(options) {
+    static create(options) {
         var defaults = {
             controller: Render,
             engine: null,
@@ -118,7 +101,7 @@ var Mouse = require('../core/Mouse');
      * @method run
      * @param {render} render
      */
-    Render.run = function(render) {
+    static run(render) {
         (function loop(time){
             render.frameRequestId = _requestAnimationFrame(loop);
             Render.world(render);
@@ -130,7 +113,7 @@ var Mouse = require('../core/Mouse');
      * @method stop
      * @param {render} render
      */
-    Render.stop = function(render) {
+    static stop(render) {
         _cancelAnimationFrame(render.frameRequestId);
     };
 
@@ -141,7 +124,7 @@ var Mouse = require('../core/Mouse');
      * @param {render} render
      * @param {number} pixelRatio
      */
-    Render.setPixelRatio = function(render, pixelRatio) {
+    static setPixelRatio(render, pixelRatio) {
         var options = render.options,
             canvas = render.canvas;
 
@@ -170,7 +153,7 @@ var Mouse = require('../core/Mouse');
      * @param {vector} [padding]
      * @param {bool} [center=true]
      */
-    Render.lookAt = function(render, objects, padding, center) {
+    static lookAt(render, objects, padding, center) {
         center = typeof center !== 'undefined' ? center : true;
         objects = Common.isArray(objects) ? objects : [objects];
         padding = padding || {
@@ -260,17 +243,17 @@ var Mouse = require('../core/Mouse');
      * @method startViewTransform
      * @param {render} render
      */
-    Render.startViewTransform = function(render) {
+    static startViewTransform(render) {
         var boundsWidth = render.bounds.max.x - render.bounds.min.x,
             boundsHeight = render.bounds.max.y - render.bounds.min.y,
             boundsScaleX = boundsWidth / render.options.width,
             boundsScaleY = boundsHeight / render.options.height;
 
         render.context.setTransform(
-            render.options.pixelRatio / boundsScaleX, 0, 0, 
+            render.options.pixelRatio / boundsScaleX, 0, 0,
             render.options.pixelRatio / boundsScaleY, 0, 0
         );
-        
+
         render.context.translate(-render.bounds.min.x, -render.bounds.min.y);
     };
 
@@ -279,7 +262,7 @@ var Mouse = require('../core/Mouse');
      * @method endViewTransform
      * @param {render} render
      */
-    Render.endViewTransform = function(render) {
+    static endViewTransform(render) {
         render.context.setTransform(render.options.pixelRatio, 0, 0, render.options.pixelRatio, 0, 0);
     };
 
@@ -289,7 +272,7 @@ var Mouse = require('../core/Mouse');
      * @method world
      * @param {render} render
      */
-    Render.world = function(render) {
+    static world(render) {
         var engine = render.engine,
             world = engine.world,
             canvas = render.canvas,
@@ -427,7 +410,7 @@ var Mouse = require('../core/Mouse');
      * @param {render} render
      * @param {RenderingContext} context
      */
-    Render.debug = function(render, context) {
+    static debug(render, context) {
         var c = context,
             engine = render.engine,
             world = engine.world,
@@ -493,7 +476,7 @@ var Mouse = require('../core/Mouse');
      * @param {constraint[]} constraints
      * @param {RenderingContext} context
      */
-    Render.constraints = function(constraints, context) {
+    static constraints(constraints, context) {
         var c = context;
 
         for (var i = 0; i < constraints.length; i++) {
@@ -571,7 +554,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyShadows = function(render, bodies, context) {
+    static bodyShadows(render, bodies, context) {
         var c = context,
             engine = render.engine;
 
@@ -620,7 +603,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodies = function(render, bodies, context) {
+    static bodies(render, bodies, context) {
         var c = context,
             engine = render.engine,
             options = render.options,
@@ -723,7 +706,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyWireframes = function(render, bodies, context) {
+    static bodyWireframes(render, bodies, context) {
         var c = context,
             showInternalEdges = render.options.showInternalEdges,
             body,
@@ -776,7 +759,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyConvexHulls = function(render, bodies, context) {
+    static bodyConvexHulls(render, bodies, context) {
         var c = context,
             body,
             part,
@@ -815,7 +798,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.vertexNumbers = function(render, bodies, context) {
+    static vertexNumbers(render, bodies, context) {
         var c = context,
             i,
             j,
@@ -841,7 +824,7 @@ var Mouse = require('../core/Mouse');
      * @param {mouse} mouse
      * @param {RenderingContext} context
      */
-    Render.mousePosition = function(render, mouse, context) {
+    static mousePosition(render, mouse, context) {
         var c = context;
         c.fillStyle = 'rgba(255,255,255,0.8)';
         c.fillText(mouse.position.x + '  ' + mouse.position.y, mouse.position.x + 5, mouse.position.y - 5);
@@ -855,7 +838,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyBounds = function(render, bodies, context) {
+    static bodyBounds(render, bodies, context) {
         var c = context,
             engine = render.engine,
             options = render.options;
@@ -892,7 +875,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyAxes = function(render, bodies, context) {
+    static bodyAxes(render, bodies, context) {
         var c = context,
             engine = render.engine,
             options = render.options,
@@ -954,7 +937,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyPositions = function(render, bodies, context) {
+    static bodyPositions(render, bodies, context) {
         var c = context,
             engine = render.engine,
             options = render.options,
@@ -1010,7 +993,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyVelocity = function(render, bodies, context) {
+    static bodyVelocity(render, bodies, context) {
         var c = context;
 
         c.beginPath();
@@ -1038,7 +1021,7 @@ var Mouse = require('../core/Mouse');
      * @param {body[]} bodies
      * @param {RenderingContext} context
      */
-    Render.bodyIds = function(render, bodies, context) {
+    static bodyIds(render, bodies, context) {
         var c = context,
             i,
             j;
@@ -1065,7 +1048,7 @@ var Mouse = require('../core/Mouse');
      * @param {pair[]} pairs
      * @param {RenderingContext} context
      */
-    Render.collisions = function(render, pairs, context) {
+    static collisions(render, pairs, context) {
         var c = context,
             options = render.options,
             pair,
@@ -1148,7 +1131,7 @@ var Mouse = require('../core/Mouse');
      * @param {pair[]} pairs
      * @param {RenderingContext} context
      */
-    Render.separations = function(render, pairs, context) {
+    static separations(render, pairs, context) {
         var c = context,
             options = render.options,
             pair,
@@ -1205,7 +1188,7 @@ var Mouse = require('../core/Mouse');
      * @param {grid} grid
      * @param {RenderingContext} context
      */
-    Render.grid = function(render, grid, context) {
+    static grid(render, grid, context) {
         var c = context,
             options = render.options;
 
@@ -1243,7 +1226,7 @@ var Mouse = require('../core/Mouse');
      * @param {inspector} inspector
      * @param {RenderingContext} context
      */
-    Render.inspector = function(inspector, context) {
+    static inspector(inspector, context) {
         var engine = inspector.engine,
             selected = inspector.selected,
             render = inspector.render,
@@ -1270,30 +1253,30 @@ var Mouse = require('../core/Mouse');
 
             switch (item.type) {
 
-            case 'body':
+                case 'body':
 
-                // render body selections
-                bounds = item.bounds;
-                context.beginPath();
-                context.rect(Math.floor(bounds.min.x - 3), Math.floor(bounds.min.y - 3),
-                    Math.floor(bounds.max.x - bounds.min.x + 6), Math.floor(bounds.max.y - bounds.min.y + 6));
-                context.closePath();
-                context.stroke();
+                    // render body selections
+                    bounds = item.bounds;
+                    context.beginPath();
+                    context.rect(Math.floor(bounds.min.x - 3), Math.floor(bounds.min.y - 3),
+                        Math.floor(bounds.max.x - bounds.min.x + 6), Math.floor(bounds.max.y - bounds.min.y + 6));
+                    context.closePath();
+                    context.stroke();
 
-                break;
+                    break;
 
-            case 'constraint':
+                case 'constraint':
 
-                // render constraint selections
-                var point = item.pointA;
-                if (item.bodyA)
-                    point = item.pointB;
-                context.beginPath();
-                context.arc(point.x, point.y, 10, 0, 2 * Math.PI);
-                context.closePath();
-                context.stroke();
+                    // render constraint selections
+                    var point = item.pointA;
+                    if (item.bodyA)
+                        point = item.pointB;
+                    context.beginPath();
+                    context.arc(point.x, point.y, 10, 0, 2 * Math.PI);
+                    context.closePath();
+                    context.stroke();
 
-                break;
+                    break;
 
             }
 
@@ -1320,79 +1303,6 @@ var Mouse = require('../core/Mouse');
         if (options.hasBounds)
             context.setTransform(1, 0, 0, 1, 0, 0);
     };
-
-    /**
-     * Description
-     * @method _createCanvas
-     * @private
-     * @param {} width
-     * @param {} height
-     * @return canvas
-     */
-    var _createCanvas = function(width, height) {
-        var canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        canvas.oncontextmenu = function() { return false; };
-        canvas.onselectstart = function() { return false; };
-        return canvas;
-    };
-
-    /**
-     * Gets the pixel ratio of the canvas.
-     * @method _getPixelRatio
-     * @private
-     * @param {HTMLElement} canvas
-     * @return {Number} pixel ratio
-     */
-    var _getPixelRatio = function(canvas) {
-        var context = canvas.getContext('2d'),
-            devicePixelRatio = window.devicePixelRatio || 1,
-            backingStorePixelRatio = context.webkitBackingStorePixelRatio || context.mozBackingStorePixelRatio
-                                      || context.msBackingStorePixelRatio || context.oBackingStorePixelRatio
-                                      || context.backingStorePixelRatio || 1;
-
-        return devicePixelRatio / backingStorePixelRatio;
-    };
-
-    /**
-     * Gets the requested texture (an Image) via its path
-     * @method _getTexture
-     * @private
-     * @param {render} render
-     * @param {string} imagePath
-     * @return {Image} texture
-     */
-    var _getTexture = function(render, imagePath) {
-        var image = render.textures[imagePath];
-
-        if (image)
-            return image;
-
-        image = render.textures[imagePath] = new Image();
-        image.src = imagePath;
-
-        return image;
-    };
-
-    /**
-     * Applies the background to the canvas using CSS.
-     * @method applyBackground
-     * @private
-     * @param {render} render
-     * @param {string} background
-     */
-    var _applyBackground = function(render, background) {
-        var cssBackground = background;
-
-        if (/(jpg|gif|png)$/.test(background))
-            cssBackground = 'url(' + background + ')';
-
-        render.canvas.style.background = cssBackground;
-        render.canvas.style.backgroundSize = "contain";
-        render.currentBackground = background;
-    };
-
     /*
     *
     *  Events Documentation
@@ -1400,24 +1310,24 @@ var Mouse = require('../core/Mouse');
     */
 
     /**
-    * Fired before rendering
-    *
-    * @event beforeRender
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired before rendering
+     *
+     * @event beforeRender
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired after rendering
-    *
-    * @event afterRender
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired after rendering
+     *
+     * @event afterRender
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /*
     *
@@ -1509,5 +1419,89 @@ var Mouse = require('../core/Mouse');
      * @property textures
      * @type {}
      */
+}
 
-})();
+var _requestAnimationFrame,
+    _cancelAnimationFrame;
+
+if (typeof window !== 'undefined') {
+    _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame || window.msRequestAnimationFrame
+        || function(callback){ window.setTimeout(function() { callback(Common.now()); }, 1000 / 60); };
+
+    _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
+        || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
+}
+
+
+/**
+ * Description
+ * @method _createCanvas
+ * @private
+ * @param {} width
+ * @param {} height
+ * @return canvas
+ */
+var _createCanvas = function(width, height) {
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.oncontextmenu = function() { return false; };
+    canvas.onselectstart = function() { return false; };
+    return canvas;
+};
+
+/**
+ * Gets the pixel ratio of the canvas.
+ * @method _getPixelRatio
+ * @private
+ * @param {HTMLElement} canvas
+ * @return {Number} pixel ratio
+ */
+var _getPixelRatio = function(canvas) {
+    var context = canvas.getContext('2d'),
+        devicePixelRatio = window.devicePixelRatio || 1,
+        backingStorePixelRatio = context.webkitBackingStorePixelRatio || context.mozBackingStorePixelRatio
+            || context.msBackingStorePixelRatio || context.oBackingStorePixelRatio
+            || context.backingStorePixelRatio || 1;
+
+    return devicePixelRatio / backingStorePixelRatio;
+};
+
+/**
+ * Gets the requested texture (an Image) via its path
+ * @method _getTexture
+ * @private
+ * @param {render} render
+ * @param {string} imagePath
+ * @return {Image} texture
+ */
+var _getTexture = function(render, imagePath) {
+    var image = render.textures[imagePath];
+
+    if (image)
+        return image;
+
+    image = render.textures[imagePath] = new Image();
+    image.src = imagePath;
+
+    return image;
+};
+
+/**
+ * Applies the background to the canvas using CSS.
+ * @method applyBackground
+ * @private
+ * @param {render} render
+ * @param {string} background
+ */
+var _applyBackground = function(render, background) {
+    var cssBackground = background;
+
+    if (/(jpg|gif|png)$/.test(background))
+        cssBackground = 'url(' + background + ')';
+
+    render.canvas.style.background = cssBackground;
+    render.canvas.style.backgroundSize = "contain";
+    render.currentBackground = background;
+};

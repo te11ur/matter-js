@@ -1,3 +1,13 @@
+import {Composite} from "../body/Composite";
+import {Detector} from "../collision/Detector";
+import {Constraint} from "./Constraint";
+import {Common} from "../core/Common";
+import {Events} from "../core/Events";
+import {Mouse} from "../core/Mouse";
+import {Sleeping} from "../core/Sleeping";
+import {Bounds} from "../geometry/Bounds";
+import {Vertices} from "../geometry/Vertices";
+
 /**
 * The `Matter.MouseConstraint` module contains methods for creating mouse constraints.
 * Mouse constraints are used for allowing user interaction, providing the ability to move bodies via the mouse or touch.
@@ -6,23 +16,7 @@
 *
 * @class MouseConstraint
 */
-
-var MouseConstraint = {};
-
-module.exports = MouseConstraint;
-
-var Vertices = require('../geometry/Vertices');
-var Sleeping = require('../core/Sleeping');
-var Mouse = require('../core/Mouse');
-var Events = require('../core/Events');
-var Detector = require('../collision/Detector');
-var Constraint = require('./Constraint');
-var Composite = require('../body/Composite');
-var Common = require('../core/Common');
-var Bounds = require('../geometry/Bounds');
-
-(function() {
-
+export class MouseConstraint {
     /**
      * Creates a new mouse constraint.
      * All properties have default values, and many are pre-calculated automatically based on other properties.
@@ -32,7 +26,7 @@ var Bounds = require('../geometry/Bounds');
      * @param {} options
      * @return {MouseConstraint} A new MouseConstraint
      */
-    MouseConstraint.create = function(engine, options) {
+    static create(engine, options) {
         var mouse = (engine ? engine.mouse : null) || (options ? options.mouse : null);
 
         if (!mouse) {
@@ -46,11 +40,11 @@ var Bounds = require('../geometry/Bounds');
             }
         }
 
-        var constraint = Constraint.create({ 
+        var constraint = Constraint.create({
             label: 'Mouse Constraint',
             pointA: mouse.position,
             pointB: { x: 0, y: 0 },
-            length: 0.01, 
+            length: 0.01,
             stiffness: 0.1,
             angularStiffness: 1,
             render: {
@@ -90,7 +84,7 @@ var Bounds = require('../geometry/Bounds');
      * @param {MouseConstraint} mouseConstraint
      * @param {body[]} bodies
      */
-    MouseConstraint.update = function(mouseConstraint, bodies) {
+    static update(mouseConstraint, bodies) {
         var mouse = mouseConstraint.mouse,
             constraint = mouseConstraint.constraint,
             body = mouseConstraint.body;
@@ -99,8 +93,8 @@ var Bounds = require('../geometry/Bounds');
             if (!constraint.bodyB) {
                 for (var i = 0; i < bodies.length; i++) {
                     body = bodies[i];
-                    if (Bounds.contains(body.bounds, mouse.position) 
-                            && Detector.canCollide(body.collisionFilter, mouseConstraint.collisionFilter)) {
+                    if (Bounds.contains(body.bounds, mouse.position)
+                        && Detector.canCollide(body.collisionFilter, mouseConstraint.collisionFilter)) {
                         for (var j = body.parts.length > 1 ? 1 : 0; j < body.parts.length; j++) {
                             var part = body.parts[j];
                             if (Vertices.contains(part.vertices, mouse.position)) {
@@ -136,7 +130,7 @@ var Bounds = require('../geometry/Bounds');
      * @private
      * @param {mouse} mouseConstraint
      */
-    MouseConstraint._triggerEvents = function(mouseConstraint) {
+    static _triggerEvents(mouseConstraint) {
         var mouse = mouseConstraint.mouse,
             mouseEvents = mouse.sourceEvents;
 
@@ -160,56 +154,56 @@ var Bounds = require('../geometry/Bounds');
     */
 
     /**
-    * Fired when the mouse has moved (or a touch moves) during the last step
-    *
-    * @event mousemove
-    * @param {} event An event object
-    * @param {mouse} event.mouse The engine's mouse instance
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired when the mouse has moved (or a touch moves) during the last step
+     *
+     * @event mousemove
+     * @param {} event An event object
+     * @param {mouse} event.mouse The engine's mouse instance
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired when the mouse is down (or a touch has started) during the last step
-    *
-    * @event mousedown
-    * @param {} event An event object
-    * @param {mouse} event.mouse The engine's mouse instance
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired when the mouse is down (or a touch has started) during the last step
+     *
+     * @event mousedown
+     * @param {} event An event object
+     * @param {mouse} event.mouse The engine's mouse instance
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired when the mouse is up (or a touch has ended) during the last step
-    *
-    * @event mouseup
-    * @param {} event An event object
-    * @param {mouse} event.mouse The engine's mouse instance
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired when the mouse is up (or a touch has ended) during the last step
+     *
+     * @event mouseup
+     * @param {} event An event object
+     * @param {mouse} event.mouse The engine's mouse instance
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired when the user starts dragging a body
-    *
-    * @event startdrag
-    * @param {} event An event object
-    * @param {mouse} event.mouse The engine's mouse instance
-    * @param {body} event.body The body being dragged
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired when the user starts dragging a body
+     *
+     * @event startdrag
+     * @param {} event An event object
+     * @param {mouse} event.mouse The engine's mouse instance
+     * @param {body} event.body The body being dragged
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired when the user ends dragging a body
-    *
-    * @event enddrag
-    * @param {} event An event object
-    * @param {mouse} event.mouse The engine's mouse instance
-    * @param {body} event.body The body that has stopped being dragged
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired when the user ends dragging a body
+     *
+     * @event enddrag
+     * @param {} event An event object
+     * @param {mouse} event.mouse The engine's mouse instance
+     * @param {body} event.body The body that has stopped being dragged
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /*
     *
@@ -257,5 +251,4 @@ var Bounds = require('../geometry/Bounds');
      * @property collisionFilter
      * @type object
      */
-
-})();
+}

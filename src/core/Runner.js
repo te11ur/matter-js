@@ -1,3 +1,7 @@
+import {Common} from "./Common";
+import {Engine} from "./Engine";
+import {Events} from "./Events";
+
 /**
 * The `Matter.Runner` module is an optional utility which provides a game loop, 
 * that handles continuously updating a `Matter.Engine` for you within a browser.
@@ -9,48 +13,13 @@
 *
 * @class Runner
 */
-
-var Runner = {};
-
-module.exports = Runner;
-
-var Events = require('./Events');
-var Engine = require('./Engine');
-var Common = require('./Common');
-
-(function() {
-
-    var _requestAnimationFrame,
-        _cancelAnimationFrame;
-
-    if (typeof window !== 'undefined') {
-        _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
-                                      || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
-   
-        _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame 
-                                      || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
-    }
-
-    if (!_requestAnimationFrame) {
-        var _frameTimeout;
-
-        _requestAnimationFrame = function(callback){ 
-            _frameTimeout = setTimeout(function() { 
-                callback(Common.now()); 
-            }, 1000 / 60);
-        };
-
-        _cancelAnimationFrame = function() {
-            clearTimeout(_frameTimeout);
-        };
-    }
-
+export class Runner {
     /**
      * Creates a new Runner. The options parameter is an object that specifies any properties you wish to override the defaults.
      * @method create
      * @param {} options
      */
-    Runner.create = function(options) {
+    static create(options) {
         var defaults = {
             fps: 60,
             correction: 1,
@@ -80,7 +49,7 @@ var Common = require('./Common');
      * @method run
      * @param {engine} engine
      */
-    Runner.run = function(runner, engine) {
+    static run(runner, engine) {
         // create runner if engine is first argument
         if (typeof runner.positionIterations !== 'undefined') {
             engine = runner;
@@ -108,7 +77,7 @@ var Common = require('./Common');
      * @param {engine} engine
      * @param {number} time
      */
-    Runner.tick = function(runner, engine, time) {
+    static tick(runner, engine, time) {
         var timing = engine.timing,
             correction = 1,
             delta;
@@ -119,7 +88,7 @@ var Common = require('./Common');
         };
 
         Events.trigger(runner, 'beforeTick', event);
-        Events.trigger(engine, 'beforeTick', event); // @deprecated
+        //Events.trigger(engine, 'beforeTick', event); // @deprecated
 
         if (runner.isFixed) {
             // fixed timestep
@@ -133,7 +102,7 @@ var Common = require('./Common');
             runner.deltaHistory.push(delta);
             runner.deltaHistory = runner.deltaHistory.slice(-runner.deltaSampleSize);
             delta = Math.min.apply(null, runner.deltaHistory);
-            
+
             // limit delta
             delta = delta < runner.deltaMin ? runner.deltaMin : delta;
             delta = delta > runner.deltaMax ? runner.deltaMax : delta;
@@ -164,15 +133,15 @@ var Common = require('./Common');
         }
 
         Events.trigger(runner, 'tick', event);
-        Events.trigger(engine, 'tick', event); // @deprecated
+        //Events.trigger(engine, 'tick', event); // @deprecated
 
         // if world has been modified, clear the render scene graph
-        if (engine.world.isModified 
+        /*if (engine.world.isModified
             && engine.render
             && engine.render.controller
             && engine.render.controller.clear) {
             engine.render.controller.clear(engine.render); // @deprecated
-        }
+        }*/
 
         // update
         Events.trigger(runner, 'beforeUpdate', event);
@@ -181,7 +150,7 @@ var Common = require('./Common');
 
         // render
         // @deprecated
-        if (engine.render && engine.render.controller) {
+        /*if (engine.render && engine.render.controller) {
             Events.trigger(runner, 'beforeRender', event);
             Events.trigger(engine, 'beforeRender', event); // @deprecated
 
@@ -189,10 +158,10 @@ var Common = require('./Common');
 
             Events.trigger(runner, 'afterRender', event);
             Events.trigger(engine, 'afterRender', event); // @deprecated
-        }
+        }*/
 
         Events.trigger(runner, 'afterTick', event);
-        Events.trigger(engine, 'afterTick', event); // @deprecated
+        //Events.trigger(engine, 'afterTick', event); // @deprecated
     };
 
     /**
@@ -201,7 +170,7 @@ var Common = require('./Common');
      * @method stop
      * @param {runner} runner
      */
-    Runner.stop = function(runner) {
+    static stop(runner) {
         _cancelAnimationFrame(runner.frameRequestId);
     };
 
@@ -211,7 +180,7 @@ var Common = require('./Common');
      * @param {runner} runner
      * @param {engine} engine
      */
-    Runner.start = function(runner, engine) {
+    static start(runner, engine) {
         Runner.run(runner, engine);
     };
 
@@ -222,76 +191,76 @@ var Common = require('./Common');
     */
 
     /**
-    * Fired at the start of a tick, before any updates to the engine or timing
-    *
-    * @event beforeTick
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired at the start of a tick, before any updates to the engine or timing
+     *
+     * @event beforeTick
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired after engine timing updated, but just before update
-    *
-    * @event tick
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired after engine timing updated, but just before update
+     *
+     * @event tick
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired at the end of a tick, after engine update and after rendering
-    *
-    * @event afterTick
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired at the end of a tick, after engine update and after rendering
+     *
+     * @event afterTick
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired before update
-    *
-    * @event beforeUpdate
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired before update
+     *
+     * @event beforeUpdate
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired after update
-    *
-    * @event afterUpdate
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    */
+     * Fired after update
+     *
+     * @event afterUpdate
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     */
 
     /**
-    * Fired before rendering
-    *
-    * @event beforeRender
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    * @deprecated
-    */
+     * Fired before rendering
+     *
+     * @event beforeRender
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     * @deprecated
+     */
 
     /**
-    * Fired after rendering
-    *
-    * @event afterRender
-    * @param {} event An event object
-    * @param {number} event.timestamp The engine.timing.timestamp of the event
-    * @param {} event.source The source object of the event
-    * @param {} event.name The name of the event
-    * @deprecated
-    */
+     * Fired after rendering
+     *
+     * @event afterRender
+     * @param {} event An event object
+     * @param {number} event.timestamp The engine.timing.timestamp of the event
+     * @param {} event.source The source object of the event
+     * @param {} event.name The name of the event
+     * @deprecated
+     */
 
     /*
     *
@@ -326,5 +295,29 @@ var Common = require('./Common');
      * @type number
      * @default 1000 / 60
      */
+}
 
-})();
+var _requestAnimationFrame,
+    _cancelAnimationFrame;
+
+if (typeof window !== 'undefined') {
+    _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
+
+    _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
+        || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
+}
+
+if (!_requestAnimationFrame) {
+    var _frameTimeout;
+
+    _requestAnimationFrame = function(callback){
+        _frameTimeout = setTimeout(function() {
+            callback(Common.now());
+        }, 1000 / 60);
+    };
+
+    _cancelAnimationFrame = function() {
+        clearTimeout(_frameTimeout);
+    };
+}
