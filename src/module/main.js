@@ -69,12 +69,3 @@ export class Matter extends MatterCore {
 
     static Render = Render;
 }
-
-// aliases
-Matter.World.add = Matter.Composite.add;
-Matter.World.remove = Matter.Composite.remove;
-Matter.World.addComposite = Matter.Composite.addComposite;
-Matter.World.addBody = Matter.Composite.addBody;
-Matter.World.addConstraint = Matter.Composite.addConstraint;
-Matter.World.clear = Matter.Composite.clear;
-Matter.Engine.run = Matter.Runner.run;

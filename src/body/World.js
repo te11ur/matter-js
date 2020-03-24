@@ -1,5 +1,6 @@
 import {Common} from "../core/Common";
 import {Composite} from "./Composite";
+import {Matter} from "../module/main";
 
 /**
 * The `Matter.World` module contains methods for creating and manipulating the world composite.
@@ -13,7 +14,7 @@ import {Composite} from "./Composite";
 * @class World
 * @extends Composite
 */
-export class World {
+export class World extends Composite {
     /**
      * Creates a new world composite. The options parameter is an object that specifies any properties you wish to override the defaults.
      * See the properties section below for detailed information on what you can pass via the `options` object.

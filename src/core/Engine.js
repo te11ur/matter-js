@@ -9,6 +9,7 @@ import {Common} from "./Common";
 import {Events} from "./Events";
 import {Sleeping} from "./Sleeping";
 import {Metrics} from "./Metrics";
+import {Runner} from "./Runner";
 
 /**
 * The `Matter.Engine` module contains methods for creating and manipulating engines.
@@ -19,7 +20,7 @@ import {Metrics} from "./Metrics";
 *
 * @class Engine
 */
-export class Engine {
+export class Engine extends Runner {
     /**
      * Creates a new engine. The options parameter is an object that specifies any properties you wish to override the defaults.
      * All properties have default values, and many are pre-calculated automatically based on other properties.

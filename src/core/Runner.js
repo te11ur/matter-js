@@ -2,6 +2,31 @@ import {Common} from "./Common";
 import {Engine} from "./Engine";
 import {Events} from "./Events";
 
+var _requestAnimationFrame,
+    _cancelAnimationFrame;
+
+if (typeof window !== 'undefined') {
+    _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
+
+    _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
+        || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
+}
+
+if (!_requestAnimationFrame) {
+    var _frameTimeout;
+
+    _requestAnimationFrame = function(callback){
+        _frameTimeout = setTimeout(function() {
+            callback(Common.now());
+        }, 1000 / 60);
+    };
+
+    _cancelAnimationFrame = function() {
+        clearTimeout(_frameTimeout);
+    };
+}
+
 /**
 * The `Matter.Runner` module is an optional utility which provides a game loop, 
 * that handles continuously updating a `Matter.Engine` for you within a browser.
@@ -295,29 +320,4 @@ export class Runner {
      * @type number
      * @default 1000 / 60
      */
-}
-
-var _requestAnimationFrame,
-    _cancelAnimationFrame;
-
-if (typeof window !== 'undefined') {
-    _requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame
-        || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
-
-    _cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
-        || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
-}
-
-if (!_requestAnimationFrame) {
-    var _frameTimeout;
-
-    _requestAnimationFrame = function(callback){
-        _frameTimeout = setTimeout(function() {
-            callback(Common.now());
-        }, 1000 / 60);
-    };
-
-    _cancelAnimationFrame = function() {
-        clearTimeout(_frameTimeout);
-    };
 }
