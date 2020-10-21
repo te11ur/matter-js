@@ -202,7 +202,6 @@ export class Composite {
 
     /**
      * Adds a body to the given composite.
-     * @private
      * @method addBody
      * @param {composite} composite
      * @param {body} body
@@ -216,7 +215,6 @@ export class Composite {
 
     /**
      * Removes a body from the given composite, and optionally searching its children recursively.
-     * @private
      * @method removeBody
      * @param {composite} composite
      * @param {body} body

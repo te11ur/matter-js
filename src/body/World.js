@@ -1,6 +1,5 @@
 import {Common} from "../core/Common";
 import {Composite} from "./Composite";
-import {Matter} from "../module/main";
 
 /**
 * The `Matter.World` module contains methods for creating and manipulating the world composite.
